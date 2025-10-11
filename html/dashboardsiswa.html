@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LMS Portal</title>
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Variabel & Reset CSS --- */
+        :root {
+            --bg-color: #F7F8FC;
+            --card-bg-color: #FFFFFF;
+            --primary-text-color: #1A202C;
+            --secondary-text-color: #718096;
+            --border-color: #E2E8F0;
+            --primary-color: #4A5568;
+            --accent-color: #8B5CF6;
+            --dark-color: #121212;
+            --green-color: #34D399;
+            --orange-color: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-text-color);
+            display: flex;
+        }
+
+        /* --- Layout Utama --- */
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar (Navigasi Kiri) --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--card-bg-color);
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar h1.logo {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .user-profile .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--dark-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .user-profile .user-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-profile .user-info p {
+            font-size: 12px;
+            color: var(--secondary-text-color);
+        }
+
+        .navigation {
+            flex-grow: 1;
+        }
+
+        .navigation ul {
+            list-style: none;
+        }
+
+        .navigation ul li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 15px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .navigation ul li a i {
+            font-size: 22px;
+            margin-right: 16px;
+        }
+
+        .navigation ul li a:hover {
+            background-color: #F1F5F9;
+        }
+
+        .navigation ul li a.active {
+            background-color: var(--dark-color);
+            color: white;
+        }
+
+        .logout-section a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #EF4444;
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+
+        .logout-section a:hover {
+            background-color: #FEF2F2;
+        }
+
+        .logout-section a i {
+            font-size: 22px;
+            margin-right: 16px;
+        }
+
+        /* --- Konten Utama --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .main-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .main-header p {
+            color: var(--secondary-text-color);
+            margin-bottom: 32px;
+        }
+
+        /* --- Kartu Statistik --- */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg-color);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-card .icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 16px;
+        }
+
+        .stat-card:nth-child(1) .icon-container {
+            background-color: #E0E7FF;
+            color: #4338CA;
+        }
+
+        .stat-card:nth-child(2) .icon-container {
+            background-color: #FEF3C7;
+            color: #D97706;
+        }
+
+        .stat-card:nth-child(3) .icon-container {
+            background-color: #D1FAE5;
+            color: #059669;
+        }
+
+        .stat-card:nth-child(4) .icon-container {
+            background-color: #F3E8FF;
+            color: #8B5CF6;
+        }
+
+        .stat-card .stat-info p {
+            font-size: 14px;
+            color: var(--secondary-text-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* --- Layout Konten Bawah --- */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        /* --- Card Umum --- */
+        .content-card {
+            background-color: var(--card-bg-color);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .content-card .card-header h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .content-card .card-header p {
+            font-size: 14px;
+            color: var(--secondary-text-color);
+        }
+
+        /* --- Kartu Tugas & Kuis --- */
+        .tasks-list {
+            margin-top: 24px;
+        }
+
+        .task-item {
+            background-color: #F8F9FA;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .task-details .tag {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .task-details h5 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .task-details .deadline {
+            font-size: 13px;
+            color: var(--secondary-text-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .task-details .deadline i {
+            margin-right: 6px;
+        }
+
+        .task-action .btn-kerjakan {
+            background-color: var(--dark-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .task-action .btn-kerjakan:hover {
+            background-color: #333;
+        }
+
+        /* --- Kartu Pengumuman & Materi --- */
+        .updates-section .content-card {
+            margin-bottom: 24px;
+        }
+
+        .updates-list {
+            margin-top: 24px;
+        }
+
+        .update-item {
+            display: flex;
+            align-items: flex-start;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .update-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .update-item .icon {
+            font-size: 20px;
+            margin-right: 16px;
+            color: var(--primary-color);
+            margin-top: 2px;
+        }
+
+        .update-item h5 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .update-item p {
+            font-size: 13px;
+            color: var(--secondary-text-color);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .update-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--secondary-text-color);
+        }
+
+        .update-meta .tag {
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background-color: #F1F5F9;
+            margin-right: 8px;
+        }
+
+        /* --- Responsif --- */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .sidebar .logo,
+            .sidebar .navigation,
+            .sidebar .logout-section {
+                display: none;
+                /* Sembunyikan untuk simplifikasi, butuh JS untuk toggle menu */
+            }
+
+            .sidebar .user-profile {
+                margin: 0;
+            }
+
+            .main-content {
+                padding: 24px;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div>
+                <h1 class="logo">LMS Portal</h1>
+                <div class="user-profile">
+                    <div class="avatar">AP</div>
+                    <div class="user-info">
+                        <h4>Ahmad Pratama</h4>
+                        <p>23131 | Siswa</p>
+                    </div>
+                </div>
+                <nav class="navigation">
+                    <ul>
+                        <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                        <li><a href="#"><i class='bx bx-book-alt'></i> Kelas Saya</a></li>
+                        <li><a href="#"><i class='bx bx-user'></i> Profil</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="logout-section">
+                <a href="#"><i class='bx bx-log-out'></i> Keluar</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h2>Selamat Datang, Ahmad Pratama! 👋</h2>
+                <p>Berikut adalah ringkasan aktivitas belajar Anda hari ini</p>
+            </header>
+
+            <section class="stats-cards">
+                <div class="stat-card">
+                    <div class="icon-container"><i class='bx bx-book'></i></div>
+                    <div class="stat-info">
+                        <p>Total Kelas</p>
+                        <h3>8</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-container"><i class='bx bx-folder-open'></i></div>
+                    <div class="stat-info">
+                        <p>Tugas Aktif</p>
+                        <h3>5</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-container"><i class='bx bx-check-circle'></i></div>
+                    <div class="stat-info">
+                        <p>Tugas Selesai</p>
+                        <h3>12</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-container"><i class='bx bx-line-chart'></i></div>
+                    <div class="stat-info">
+                        <p>Rata-rata Nilai</p>
+                        <h3>85</h3>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-grid">
+                <div class="tasks-section content-card">
+                    <div class="card-header">
+                        <h4><i class='bx bx-time-five'></i> Tugas & Kuis Mendatang</h4>
+                        <p>Deadline terdekat yang perlu segera dikerjakan</p>
+                    </div>
+                    <div class="tasks-list">
+                        <div class="task-item">
+                            <div class="task-details">
+                                <span class="tag">Kuis</span>
+                                <h5>Kuis Matematika - Trigonometri</h5>
+                                <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 1 hari lagi
+                                </div>
+                            </div>
+                            <div class="task-action">
+                                <button class="btn-kerjakan">Kerjakan</button>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-details">
+                                <span class="tag" style="background-color: #3B82F6;">Tugas</span>
+                                <h5>Tugas Essay Bahasa Indonesia</h5>
+                                <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 3 hari lagi
+                                </div>
+                            </div>
+                            <div class="task-action">
+                                <button class="btn-kerjakan">Kerjakan</button>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-details">
+                                <span class="tag" style="background-color: #3B82F6;">Tugas</span>
+                                <h5>Praktikum Jaringan Komputer</h5>
+                                <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 3 hari lagi
+                                </div>
+                            </div>
+                            <div class="task-action">
+                                <button class="btn-kerjakan">Kerjakan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="updates-section">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h4><i class='bx bxs-bell'></i> Pengumuman Terbaru</h4>
+                            <p>Update dan notifikasi penting</p>
+                        </div>
+                        <div class="updates-list">
+                            <div class="update-item">
+                                <i class='bx bx-info-circle icon'></i>
+                                <div class="update-content">
+                                    <h5>Pengumuman Libur Nasional</h5>
+                                    <p>Sekolah akan libur pada tanggal 14-15 Oktober 2025</p>
+                                    <div class="update-meta">
+                                        <span class="tag">Umum</span>
+                                        <span>10 Okt</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h4><i class='bx bxs-file-plus'></i> Materi Baru</h4>
+                        </div>
+                        <div class="updates-list">
+                            <div class="update-item">
+                                <i class='bx bx-code-alt icon'></i>
+                                <div class="update-content">
+                                    <h5>Pemrograman Web</h5>
+                                    <p>Materi tentang HTML5 dan CSS3 sudah tersedia</p>
+                                    <div class="update-meta">
+                                        <span class="tag">Pemrograman Web</span>
+                                        <span>9 Okt</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>
