@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id(); // id (PK)
-            $table->string('name')->unique(); // Contoh: 'admin', 'guru', 'siswa'
+            $table->string('name')->unique(); // Nama peran (admin, guru, siswa)
             $table->timestamps(); // created_at dan updated_at
         });
     }
