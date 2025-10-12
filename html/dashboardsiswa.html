@@ -7,7 +7,6 @@
     <title>Dashboard - LMS Portal</title>
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,10 +20,7 @@
             --secondary-text-color: #718096;
             --border-color: #E2E8F0;
             --primary-color: #4A5568;
-            --accent-color: #8B5CF6;
             --dark-color: #121212;
-            --green-color: #34D399;
-            --orange-color: #F59E0B;
         }
 
         * {
@@ -37,122 +33,16 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--primary-text-color);
-            display: flex;
-        }
-
-        /* --- Layout Utama --- */
-        .dashboard-container {
-            display: flex;
-            width: 100%;
-            min-height: 100vh;
-        }
-
-        /* --- Sidebar (Navigasi Kiri) --- */
-        .sidebar {
-            width: 260px;
-            background-color: var(--card-bg-color);
-            border-right: 1px solid var(--border-color);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .sidebar h1.logo {
-            font-size: 20px;
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .user-profile .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--dark-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 12px;
-        }
-
-        .user-profile .user-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .user-profile .user-info p {
-            font-size: 12px;
-            color: var(--secondary-text-color);
-        }
-
-        .navigation {
-            flex-grow: 1;
-        }
-
-        .navigation ul {
-            list-style: none;
-        }
-
-        .navigation ul li a {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--primary-color);
-            font-weight: 500;
-            font-size: 15px;
-            transition: background-color 0.2s, color 0.2s;
-        }
-
-        .navigation ul li a i {
-            font-size: 22px;
-            margin-right: 16px;
-        }
-
-        .navigation ul li a:hover {
-            background-color: #F1F5F9;
-        }
-
-        .navigation ul li a.active {
-            background-color: var(--dark-color);
-            color: white;
-        }
-
-        .logout-section a {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: #EF4444;
-            font-weight: 600;
-            font-size: 15px;
-            border-radius: 8px;
-        }
-
-        .logout-section a:hover {
-            background-color: #FEF2F2;
-        }
-
-        .logout-section a i {
-            font-size: 22px;
-            margin-right: 16px;
         }
 
         /* --- Konten Utama --- */
         .main-content {
-            flex-grow: 1;
             padding: 32px;
-            overflow-y: auto;
+            width: 100%;
+            max-width: 1400px;
+            /* Menambahkan max-width agar tidak terlalu lebar di layar besar */
+            margin: 0 auto;
+            /* Memusatkan konten */
         }
 
         .main-header h2 {
@@ -169,7 +59,8 @@
         /* --- Kartu Statistik --- */
         .stats-cards {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            /* Dibuat lebih responsif */
             gap: 24px;
             margin-bottom: 32px;
         }
@@ -192,6 +83,7 @@
             justify-content: center;
             font-size: 24px;
             margin-right: 16px;
+            flex-shrink: 0;
         }
 
         .stat-card:nth-child(1) .icon-container {
@@ -369,205 +261,151 @@
         }
 
         /* --- Responsif --- */
-        @media (max-width: 1200px) {
+        @media (max-width: 992px) {
             .content-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 992px) {
-            .stats-cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .sidebar .logo,
-            .sidebar .navigation,
-            .sidebar .logout-section {
-                display: none;
-                /* Sembunyikan untuk simplifikasi, butuh JS untuk toggle menu */
-            }
-
-            .sidebar .user-profile {
-                margin: 0;
-            }
-
             .main-content {
                 padding: 24px;
             }
+        }
 
-            .stats-cards {
-                grid-template-columns: 1fr;
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 16px;
+            }
+
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
         }
     </style>
 </head>
 
 <body>
+    <main class="main-content">
+        <header class="main-header">
+            <h2>Selamat Datang, Ahmad Pratama! 👋</h2>
+            <p>Berikut adalah ringkasan aktivitas belajar Anda hari ini</p>
+        </header>
 
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div>
-                <h1 class="logo">LMS Portal</h1>
-                <div class="user-profile">
-                    <div class="avatar">AP</div>
-                    <div class="user-info">
-                        <h4>Ahmad Pratama</h4>
-                        <p>23131 | Siswa</p>
-                    </div>
+        <section class="stats-cards">
+            <div class="stat-card">
+                <div class="icon-container"><i class='bx bx-book'></i></div>
+                <div class="stat-info">
+                    <p>Total Kelas</p>
+                    <h3>8</h3>
                 </div>
-                <nav class="navigation">
-                    <ul>
-                        <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-                        <li><a href="#"><i class='bx bx-book-alt'></i> Kelas Saya</a></li>
-                        <li><a href="#"><i class='bx bx-user'></i> Profil</a></li>
-                    </ul>
-                </nav>
             </div>
-            <div class="logout-section">
-                <a href="#"><i class='bx bx-log-out'></i> Keluar</a>
+            <div class="stat-card">
+                <div class="icon-container"><i class='bx bx-folder-open'></i></div>
+                <div class="stat-info">
+                    <p>Tugas Aktif</p>
+                    <h3>5</h3>
+                </div>
             </div>
-        </aside>
+            <div class="stat-card">
+                <div class="icon-container"><i class='bx bx-check-circle'></i></div>
+                <div class="stat-info">
+                    <p>Tugas Selesai</p>
+                    <h3>12</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-container"><i class='bx bx-line-chart'></i></div>
+                <div class="stat-info">
+                    <p>Rata-rata Nilai</p>
+                    <h3>85</h3>
+                </div>
+            </div>
+        </section>
 
-        <main class="main-content">
-            <header class="main-header">
-                <h2>Selamat Datang, Ahmad Pratama! 👋</h2>
-                <p>Berikut adalah ringkasan aktivitas belajar Anda hari ini</p>
-            </header>
+        <section class="content-grid">
+            <div class="tasks-section content-card">
+                <div class="card-header">
+                    <h4><i class='bx bx-time-five'></i> Tugas & Kuis Mendatang</h4>
+                    <p>Deadline terdekat yang perlu segera dikerjakan</p>
+                </div>
+                <div class="tasks-list">
+                    <div class="task-item">
+                        <div class="task-details">
+                            <span class="tag">Kuis</span>
+                            <h5>Kuis Matematika - Trigonometri</h5>
+                            <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 1 hari lagi</div>
+                        </div>
+                        <div class="task-action">
+                            <button class="btn-kerjakan">Kerjakan</button>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <span class="tag" style="background-color: #3B82F6;">Tugas</span>
+                            <h5>Tugas Essay Bahasa Indonesia</h5>
+                            <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 3 hari lagi</div>
+                        </div>
+                        <div class="task-action">
+                            <button class="btn-kerjakan">Kerjakan</button>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <span class="tag" style="background-color: #3B82F6;">Tugas</span>
+                            <h5>Praktikum Jaringan Komputer</h5>
+                            <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 3 hari lagi</div>
+                        </div>
+                        <div class="task-action">
+                            <button class="btn-kerjakan">Kerjakan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <section class="stats-cards">
-                <div class="stat-card">
-                    <div class="icon-container"><i class='bx bx-book'></i></div>
-                    <div class="stat-info">
-                        <p>Total Kelas</p>
-                        <h3>8</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-container"><i class='bx bx-folder-open'></i></div>
-                    <div class="stat-info">
-                        <p>Tugas Aktif</p>
-                        <h3>5</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-container"><i class='bx bx-check-circle'></i></div>
-                    <div class="stat-info">
-                        <p>Tugas Selesai</p>
-                        <h3>12</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-container"><i class='bx bx-line-chart'></i></div>
-                    <div class="stat-info">
-                        <p>Rata-rata Nilai</p>
-                        <h3>85</h3>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-grid">
-                <div class="tasks-section content-card">
+            <div class="updates-section">
+                <div class="content-card">
                     <div class="card-header">
-                        <h4><i class='bx bx-time-five'></i> Tugas & Kuis Mendatang</h4>
-                        <p>Deadline terdekat yang perlu segera dikerjakan</p>
+                        <h4><i class='bx bxs-bell'></i> Pengumuman Terbaru</h4>
+                        <p>Update dan notifikasi penting</p>
                     </div>
-                    <div class="tasks-list">
-                        <div class="task-item">
-                            <div class="task-details">
-                                <span class="tag">Kuis</span>
-                                <h5>Kuis Matematika - Trigonometri</h5>
-                                <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 1 hari lagi
-                                </div>
-                            </div>
-                            <div class="task-action">
-                                <button class="btn-kerjakan">Kerjakan</button>
-                            </div>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-details">
-                                <span class="tag" style="background-color: #3B82F6;">Tugas</span>
-                                <h5>Tugas Essay Bahasa Indonesia</h5>
-                                <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 3 hari lagi
-                                </div>
-                            </div>
-                            <div class="task-action">
-                                <button class="btn-kerjakan">Kerjakan</button>
-                            </div>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-details">
-                                <span class="tag" style="background-color: #3B82F6;">Tugas</span>
-                                <h5>Praktikum Jaringan Komputer</h5>
-                                <div class="deadline"><i class='bx bx-calendar-exclamation'></i> Deadline: 3 hari lagi
-                                </div>
-                            </div>
-                            <div class="task-action">
-                                <button class="btn-kerjakan">Kerjakan</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="updates-section">
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h4><i class='bx bxs-bell'></i> Pengumuman Terbaru</h4>
-                            <p>Update dan notifikasi penting</p>
-                        </div>
-                        <div class="updates-list">
-                            <div class="update-item">
-                                <i class='bx bx-info-circle icon'></i>
-                                <div class="update-content">
-                                    <h5>Pengumuman Libur Nasional</h5>
-                                    <p>Sekolah akan libur pada tanggal 14-15 Oktober 2025</p>
-                                    <div class="update-meta">
-                                        <span class="tag">Umum</span>
-                                        <span>10 Okt</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h4><i class='bx bxs-file-plus'></i> Materi Baru</h4>
-                        </div>
-                        <div class="updates-list">
-                            <div class="update-item">
-                                <i class='bx bx-code-alt icon'></i>
-                                <div class="update-content">
-                                    <h5>Pemrograman Web</h5>
-                                    <p>Materi tentang HTML5 dan CSS3 sudah tersedia</p>
-                                    <div class="update-meta">
-                                        <span class="tag">Pemrograman Web</span>
-                                        <span>9 Okt</span>
-                                    </div>
+                    <div class="updates-list">
+                        <div class="update-item">
+                            <i class='bx bx-info-circle icon'></i>
+                            <div class="update-content">
+                                <h5>Pengumuman Libur Nasional</h5>
+                                <p>Sekolah akan libur pada tanggal 14-15 Oktober 2025</p>
+                                <div class="update-meta">
+                                    <span class="tag">Umum</span>
+                                    <span>10 Okt</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
-    </div>
-
+                <div class="content-card">
+                    <div class="card-header">
+                        <h4><i class='bx bxs-file-plus'></i> Materi Baru</h4>
+                    </div>
+                    <div class="updates-list">
+                        <div class="update-item">
+                            <i class='bx bx-code-alt icon'></i>
+                            <div class="update-content">
+                                <h5>Pemrograman Web</h5>
+                                <p>Materi tentang HTML5 dan CSS3 sudah tersedia</p>
+                                <div class="update-meta">
+                                    <span class="tag">Pemrograman Web</span>
+                                    <span>9 Okt</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 
 </html>

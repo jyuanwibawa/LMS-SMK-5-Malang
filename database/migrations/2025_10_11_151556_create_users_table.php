@@ -12,25 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id(); // id (PK)
-            $table->string('name'); // Nama lengkap
-            $table->string('email')->unique(); // Email unik
-            $table->string('identity_number')->unique()->nullable(); // NISN/NUPTK
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('identity_number')->unique()->nullable();
+            $table->enum('jenis_kelamin', ['Laki-Laki', 'Perempuan'])->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password'); // Hash password
-
-            // Foreign Key ke tabel roles
-            $table->foreignId('role_id')
-                ->nullable()
-                ->constrained('roles')
-                ->onDelete('set null');
-
-            $table->string('profile_picture')->nullable(); // Path foto profil
+            $table->string('password');
+            $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('set null');
+            $table->string('profile_picture')->nullable();
             $table->rememberToken();
-            $table->timestamps(); // created_at, updated_at
+            $table->timestamps();
         });
 
-        // Bagian bawah ini (password_reset_tokens dan sessions) biarkan default
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

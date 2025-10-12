@@ -20,10 +20,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'identity_number', // Ditambahkan
+        'identity_number',
+        'jenis_kelamin',   // <-- DITAMBAHKAN DI SINI
         'password',
-        'role_id',         // Ditambahkan
-        'profile_picture', // Ditambahkan
+        'role_id',
+        'profile_picture',
     ];
 
     /**

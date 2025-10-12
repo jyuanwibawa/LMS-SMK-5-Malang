@@ -24,9 +24,7 @@ class AuthController extends Controller
      */
     public function showRegisterForm()
     {
-        // Ambil data roles 'guru' dan 'siswa' untuk ditampilkan di form
-        $roles = Role::whereIn('name', ['guru', 'siswa'])->get();
-        return view('auth.register', ['roles' => $roles]);
+        return view('auth.register');
     }
 
     /**
@@ -34,31 +32,40 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // 1. Validasi input
         $credentials = $request->validate([
-            // Bisa login menggunakan email atau identity_number
             'login'    => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        // Cek apakah input 'login' adalah email
         $isEmail = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL);
 
-        // 2. Coba lakukan autentikasi
         $attempt = Auth::attempt([
             $isEmail ? 'email' : 'identity_number' => $credentials['login'],
             'password' => $credentials['password'],
         ]);
 
         if ($attempt) {
-            // Jika berhasil, regenerate session untuk keamanan
             $request->session()->regenerate();
 
-            // Arahkan ke halaman dashboard
-            return redirect()->intended('dashboard');
+            // ================== MULAI PERUBAHAN ==================
+
+            $user = Auth::user();
+
+            // Cek peran user dan arahkan ke dashboard yang sesuai
+            if ($user->role->name === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            } elseif ($user->role->name === 'guru') {
+                return redirect()->intended('/guru/dashboard');
+            } elseif ($user->role->name === 'siswa') {
+                return redirect()->intended('/siswa/dashboard');
+            }
+
+            // Fallback jika user tidak punya peran yang dikenali
+            return redirect()->intended('/dashboard');
+
+            // ================== AKHIR PERUBAHAN ==================
         }
 
-        // 3. Jika gagal, kembalikan ke halaman login dengan pesan error
         return back()->withErrors([
             'login' => 'Kredensial yang Anda masukkan tidak cocok dengan data kami.',
         ])->onlyInput('login');
@@ -69,29 +76,29 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // 1. Validasi semua input dari form
-        $request->validate([
+        $validatedData = $request->validate([
             'name'            => ['required', 'string', 'max:255'],
             'email'           => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'identity_number' => ['required', 'numeric', 'unique:users'],
-            'password'        => ['required', 'confirmed', Password::min(8)], // 'confirmed' akan mencocokkan dengan 'password_confirmation'
-            'role_id'         => ['required', 'exists:roles,id'], // Pastikan role_id ada di tabel roles
+            'jenis_kelamin'   => ['required', 'in:Laki-Laki,Perempuan'],
+            'password'        => ['required', 'confirmed', Password::min(8)],
         ]);
 
-        // 2. Buat user baru jika validasi berhasil
+        $siswaRole = Role::where('name', 'siswa')->firstOrFail();
+
         $user = User::create([
-            'name'            => $request->name,
-            'email'           => $request->email,
-            'identity_number' => $request->identity_number,
-            'password'        => Hash::make($request->password), // Password wajib di-hash!
-            'role_id'         => $request->role_id,
+            'name'            => $validatedData['name'],
+            'email'           => $validatedData['email'],
+            'identity_number' => $validatedData['identity_number'],
+            'jenis_kelamin'   => $validatedData['jenis_kelamin'],
+            'password'        => Hash::make($validatedData['password']),
+            'role_id'         => $siswaRole->id,
         ]);
 
-        // 3. Login-kan user yang baru dibuat
         Auth::login($user);
 
-        // 4. Arahkan ke halaman dashboard
-        return redirect('/dashboard');
+        // --- Redirect diubah agar konsisten ---
+        return redirect('/siswa/dashboard');
     }
 
     /**
@@ -100,10 +107,8 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/login');
     }
 }

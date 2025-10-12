@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* CSS Anda tetap sama, hanya ditambahkan .error-message */
+        /* CSS Anda tidak perlu diubah */
         * {
             margin: 0;
             padding: 0;
@@ -249,7 +249,8 @@
                 <p class="subtitle">Isi formulir di bawah untuk mendaftar</p>
 
                 <form method="POST" action="{{ route('register') }}">
-                    @csrf <div class="input-group">
+                    @csrf
+                    <div class="input-group">
                         <label for="name">Nama Lengkap</label>
                         <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap"
                             value="{{ old('name') }}" required>
@@ -271,18 +272,21 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="role_id">Saya mendaftar sebagai</label>
-                        <select name="role_id" id="role_id" required>
-                            <option value="" disabled selected>Pilih peran Anda</option>
-                            @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
-                                {{ ucfirst($role->name) }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('role_id') <span class="error-message">{{ $message }}</span> @enderror
+                        <label>Jenis Kelamin</label>
+                        <div style="display: flex; gap: 20px; margin-top: 8px;">
+                            <label style="font-weight: normal; display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="jenis_kelamin" value="Laki-Laki"
+                                    {{ old('jenis_kelamin') == 'Laki-Laki' ? 'checked' : '' }} required
+                                    style="width: auto; margin-right: 8px;"> Laki-Laki
+                            </label>
+                            <label style="font-weight: normal; display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="jenis_kelamin" value="Perempuan"
+                                    {{ old('jenis_kelamin') == 'Perempuan' ? 'checked' : '' }} required
+                                    style="width: auto; margin-right: 8px;"> Perempuan
+                            </label>
+                        </div>
+                        @error('jenis_kelamin') <span class="error-message">{{ $message }}</span> @enderror
                     </div>
-
                     <div class="input-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Minimal 8 karakter" required>
@@ -301,7 +305,6 @@
                 <p class="login-link">
                     Sudah punya akun? <a href="{{ route('login') }}">Masuk</a>
                 </p>
-
             </div>
         </div>
     </div>
