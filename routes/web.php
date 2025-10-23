@@ -4,6 +4,10 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Rute untuk pengguna yang belum login (Guest)
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AuthController::class, 'login']);
