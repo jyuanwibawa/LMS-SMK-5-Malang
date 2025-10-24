@@ -25,7 +25,8 @@
 
                 {{-- Link Manajemen Pengguna --}}
                 <li>
-                    <a href="#" class="{{ Request::is('admin/users*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.users.index') }}"
+                        class="{{ Request::is('admin/users*') ? 'active' : '' }}">
                         <i class='bx bx-user'></i> Manajemen Pengguna
                     </a>
                 </li>

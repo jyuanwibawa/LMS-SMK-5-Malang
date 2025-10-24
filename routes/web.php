@@ -10,9 +10,14 @@ use App\Http\Controllers\DashboardSiswaController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
 */
 
-// Rute Halaman Utama
+// Rute Halaman Utama, langsung arahkan ke halaman login
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -37,6 +42,7 @@ Route::middleware('auth')->group(function () {
     // GRUP RUTE UNTUK ADMIN
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
+        Route::get('/users', [DashboardAdminController::class, 'showUsers'])->name('users.index');
         // Tambahkan rute admin lainnya di sini...
     });
 

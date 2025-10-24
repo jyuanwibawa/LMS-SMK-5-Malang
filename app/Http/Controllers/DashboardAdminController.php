@@ -12,28 +12,30 @@ class DashboardAdminController extends Controller
      */
     public function index()
     {
-        // Menghitung total pengguna
         $totalUsers = User::count();
-
-        // Menghitung total guru
         $totalGuru = User::whereHas('role', function ($query) {
             $query->where('name', 'guru');
         })->count();
-
-        // Menghitung total siswa
         $totalSiswa = User::whereHas('role', function ($query) {
             $query->where('name', 'siswa');
         })->count();
 
-        // Anda bisa menambahkan data lain di sini, contoh:
-        // $totalKelas = Kelas::count();
-
-        // Mengirim semua data ke view menggunakan compact()
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalGuru',
             'totalSiswa'
-            // 'totalKelas'
         ));
+    }
+
+    /**
+     * Menampilkan halaman manajemen pengguna.
+     */
+    public function showUsers()
+    {
+        // Ambil semua pengguna beserta relasi 'role'-nya untuk performa yang lebih baik
+        $users = User::with('role')->latest()->get();
+
+        // Kirim data users ke view
+        return view('admin.users.index', compact('users'));
     }
 }
