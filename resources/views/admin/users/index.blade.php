@@ -304,6 +304,31 @@
             </button>
         </header>
 
+        @if (session('success'))
+            <div style="background:#dcfce7;color:#166534;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div style="background:#fee2e2;color:#991b1b;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="user-card" style="margin-bottom: 16px;">
+            <div class="card-header" style="margin-bottom: 12px;">
+                <h2>Import Pengguna dari Excel</h2>
+                <p>Unggah file .xlsx/.xls/.csv dengan header: name, email, identity_number, jenis_kelamin, role, password</p>
+            </div>
+            <form action="{{ route('admin.users.import') }}" method="POST" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                @csrf
+                <input type="file" name="file" accept=".xlsx,.xls,.csv" required style="border:1px solid #e5e7eb;padding:8px;border-radius:8px;background:#fff;" />
+                <button type="submit" class="add-user-btn" style="background:#111827;color:#fff;">
+                    Import Excel
+                </button>
+            </form>
+        </div>
+
         <div class="user-card">
             <div class="card-header">
                 <h2>Daftar Pengguna</h2>

@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
         Route::get('/users', [DashboardAdminController::class, 'showUsers'])->name('users.index');
+        Route::post('/users/import', [DashboardAdminController::class, 'importUsers'])->name('users.import');
         // Tambahkan rute admin lainnya di sini...
     });
 
