@@ -43,7 +43,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
         Route::get('/users', [DashboardAdminController::class, 'showUsers'])->name('users.index');
+        Route::post('/users', [DashboardAdminController::class, 'storeUser'])->name('users.store');
         Route::post('/users/import', [DashboardAdminController::class, 'importUsers'])->name('users.import');
+        Route::put('/users/{user}', [DashboardAdminController::class, 'updateUser'])->name('users.update');
+        Route::delete('/users/{user}', [DashboardAdminController::class, 'destroyUser'])->name('users.destroy');
+        Route::get('/academic', [DashboardAdminController::class, 'academic'])->name('academic.index');
         // Tambahkan rute admin lainnya di sini...
     });
 

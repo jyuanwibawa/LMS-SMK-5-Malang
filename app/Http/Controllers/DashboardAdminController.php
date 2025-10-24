@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Imports\UsersImport;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Role;
 
 class DashboardAdminController extends Controller
 {
@@ -32,13 +33,24 @@ class DashboardAdminController extends Controller
     /**
      * Menampilkan halaman manajemen pengguna.
      */
-    public function showUsers()
+    public function showUsers(Request $request)
     {
-        // Ambil semua pengguna beserta relasi 'role'-nya untuk performa yang lebih baik
-        $users = User::with('role')->latest()->get();
+        $q = trim((string) $request->input('q', ''));
+        $usersQuery = User::with('role');
+        if ($q !== '') {
+            $usersQuery->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%$q%")
+                    ->orWhere('email', 'like', "%$q%")
+                    ->orWhere('identity_number', 'like', "%$q%")
+                    ->orWhereHas('role', function ($qr) use ($q) {
+                        $qr->where('name', 'like', "%$q%");
+                    });
+            });
+        }
+        $users = $usersQuery->latest()->get();
+        $roles = Role::orderBy('name')->get();
 
-        // Kirim data users ke view
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'roles', 'q'));
     }
 
     public function importUsers(Request $request)
@@ -58,5 +70,76 @@ class DashboardAdminController extends Controller
         }
 
         return Redirect::route('admin.users.index')->with('success', 'Import pengguna berhasil.');
+    }
+
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'nisn_nuptk' => ['nullable', 'string', 'max:255', 'unique:users,identity_number'],
+            'jenis_kelamin' => ['nullable', 'in:Laki-Laki,Perempuan'],
+            'role' => ['required', 'exists:roles,name'],
+            'password' => ['required', 'min:6'],
+            'konfirmasi_password' => ['required'],
+        ]);
+
+        if ($request->input('password') !== $request->input('konfirmasi_password')) {
+            return Redirect::back()->withInput()->withErrors(['konfirmasi_password' => 'Konfirmasi password tidak cocok.']);
+        }
+
+        $role = Role::where('name', $request->input('role'))->first();
+
+        User::create([
+            'name' => $request->input('nama'),
+            'email' => strtolower($request->input('email')),
+            'identity_number' => $request->input('nisn_nuptk') ?: null,
+            'jenis_kelamin' => $request->input('jenis_kelamin') ?: null,
+            'password' => $request->input('password'),
+            'role_id' => $role?->id,
+        ]);
+
+        return Redirect::route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'nisn_nuptk' => ['nullable', 'string', 'max:255', 'unique:users,identity_number,' . $user->id],
+            'jenis_kelamin' => ['nullable', 'in:Laki-Laki,Perempuan'],
+            'role' => ['required', 'exists:roles,name'],
+            'password' => ['nullable', 'min:6'],
+        ]);
+
+        $role = Role::where('name', $request->input('role'))->first();
+
+        $data = [
+            'name' => $request->input('nama'),
+            'email' => strtolower($request->input('email')),
+            'identity_number' => $request->input('nisn_nuptk') ?: null,
+            'jenis_kelamin' => $request->input('jenis_kelamin') ?: null,
+            'role_id' => $role?->id,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = $request->input('password');
+        }
+
+        $user->update($data);
+
+        return Redirect::route('admin.users.index')->with('success', 'Pengguna berhasil diperbarui.');
+    }
+
+    public function destroyUser(User $user)
+    {
+        $user->delete();
+        return Redirect::route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
+    }
+
+    public function academic()
+    {
+        return view('admin.academic.index');
     }
 }

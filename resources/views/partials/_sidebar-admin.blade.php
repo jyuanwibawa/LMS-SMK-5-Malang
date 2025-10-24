@@ -33,7 +33,7 @@
 
                 {{-- Link Manajemen Akademik --}}
                 <li>
-                    <a href="#" class="{{ Request::is('admin/academic*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.academic.index') }}" class="{{ Request::is('admin/academic*') ? 'active' : '' }}">
                         <i class='bx bx-book-alt'></i> Manajemen Akademik
                     </a>
                 </li>
