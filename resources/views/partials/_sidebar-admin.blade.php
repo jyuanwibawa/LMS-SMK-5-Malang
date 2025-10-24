@@ -40,7 +40,7 @@
 
                 {{-- Link Log Aktivitas --}}
                 <li>
-                    <a href="#" class="{{ Request::is('admin/logs*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.logs.index') }}" class="{{ Request::is('admin/logs*') ? 'active' : '' }}">
                         <i class='bx bx-line-chart'></i> Log Aktivitas
                     </a>
                 </li>

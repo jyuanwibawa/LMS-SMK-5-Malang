@@ -142,4 +142,9 @@ class DashboardAdminController extends Controller
     {
         return view('admin.academic.index');
     }
+
+    public function logs()
+    {
+        return view('admin.logs.index');
+    }
 }

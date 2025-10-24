@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{user}', [DashboardAdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [DashboardAdminController::class, 'destroyUser'])->name('users.destroy');
         Route::get('/academic', [DashboardAdminController::class, 'academic'])->name('academic.index');
+        Route::get('/logs', [DashboardAdminController::class, 'logs'])->name('logs.index');
         // Tambahkan rute admin lainnya di sini...
     });
 
