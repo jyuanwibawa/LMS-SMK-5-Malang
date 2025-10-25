@@ -183,4 +183,26 @@ class DashboardAdminController extends Controller
             'availableStudents' => $availableStudents,
         ]);
     }
+
+    public function manageCourse(\App\Models\Course $course)
+    {
+        $course->load(['teachings.user', 'teachings.schoolClass']);
+
+        // Guru yang tersedia (role guru)
+        $availableTeachers = \App\Models\User::whereHas('role', function($q){ $q->where('name','guru'); })
+            ->orderBy('name')
+            ->get(['id','name','email']);
+
+        // Semua kelas aktif untuk penugasan
+        $classes = \App\Models\SchoolClass::orderBy('level')
+            ->orderBy('major')
+            ->orderBy('name')
+            ->get(['id','name','academic_year']);
+
+        return view('admin.academic.kelolamapel', [
+            'course' => $course,
+            'availableTeachers' => $availableTeachers,
+            'classes' => $classes,
+        ]);
+    }
 }

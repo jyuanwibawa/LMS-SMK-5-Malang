@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
         // Halaman index Manajemen Akademik di /admin/akademik
         Route::get('/akademik', [DashboardAdminController::class, 'academic'])->name('academic.index');
         Route::get('/akademik/kelas/{class}', [DashboardAdminController::class, 'manageClass'])->name('academic.classes.show');
+        Route::get('/akademik/mapel/{course}', [DashboardAdminController::class, 'manageCourse'])->name('academic.courses.show');
 
         // CRUD Kelas
         Route::post('/classes', [AcademicClassController::class, 'store'])->name('classes.store');
@@ -64,6 +65,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
         Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
         Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+        // Teachings for a Course
+        Route::post('/courses/{course}/teachings', [CourseController::class, 'storeTeaching'])->name('courses.teachings.store');
+        Route::delete('/courses/{course}/teachings/{teaching}', [CourseController::class, 'destroyTeaching'])->name('courses.teachings.destroy');
         Route::get('/logs', [DashboardAdminController::class, 'logs'])->name('logs.index');
         // Tambahkan rute admin lainnya di sini...
 
