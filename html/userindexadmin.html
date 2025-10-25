@@ -1,72 +1,60 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Pengguna</title>
     <style>
-        /* Menggunakan Google Font 'Inter' seperti pada desain modern */
+        /* General Styling */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Reset dan Pengaturan Dasar */
         :root {
-            --background-color: #f8f9fa;
-            --card-background: #ffffff;
+            --bg-color: #f7f7f8;
+            --card-bg: #ffffff;
             --text-primary: #111827;
             --text-secondary: #6b7280;
             --border-color: #e5e7eb;
             --primary-button-bg: #111827;
             --primary-button-text: #ffffff;
-            --status-active-bg: #dcfce7;
-            --status-active-text: #166534;
             --role-siswa-bg: #e0f2fe;
-            --role-siswa-text: #075985;
-            --role-guru-bg: #fee2e2;
-            --role-guru-text: #991b1b;
-            --edit-color: #3b82f6;
-            --delete-color: #ef4444;
+            --role-siswa-text: #0ea5e9;
+            --role-guru-bg: #111827;
+            --role-guru-text: #ffffff;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
+            background-color: var(--bg-color);
             color: var(--text-primary);
             margin: 0;
             padding: 2rem;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Kontainer Utama */
+        /* Main Container */
         .container {
             max-width: 1200px;
-            margin: auto;
+            margin: 0 auto;
         }
 
-        /* Header Halaman */
-        .page-header {
+        /* Header */
+        .main-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
-        .page-header h1 {
-            font-size: 2rem;
+        .main-header h1 {
+            font-size: 1.8rem;
             font-weight: 700;
             margin: 0;
         }
 
-        .page-header p {
-            font-size: 1rem;
+        .main-header p {
             color: var(--text-secondary);
             margin: 0.25rem 0 0 0;
         }
 
-        /* Tombol Tambah Pengguna */
         .add-user-btn {
             display: inline-flex;
             align-items: center;
@@ -74,31 +62,29 @@
             background-color: var(--primary-button-bg);
             color: var(--primary-button-text);
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 8px;
             padding: 0.75rem 1.25rem;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            text-decoration: none;
             transition: background-color 0.2s;
         }
 
         .add-user-btn:hover {
-            background-color: #374151;
+            opacity: 0.9;
         }
-
+        
         .add-user-btn svg {
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 20px;
+            height: 20px;
         }
 
-        /* Kartu Daftar Pengguna */
-        .user-card {
-            background-color: var(--card-background);
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        /* User Management Card */
+        .user-management-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
             padding: 1.5rem;
-            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
 
         .card-header {
@@ -110,626 +96,216 @@
             font-weight: 600;
             margin: 0;
         }
-
+        
         .card-header p {
-            font-size: 0.9rem;
             color: var(--text-secondary);
+            font-size: 0.9rem;
             margin: 0.25rem 0 0 0;
         }
 
-        /* Filter dan Pencarian */
-        .filter-controls {
+        /* Toolbar (Search & Filter) */
+        .toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-            flex-wrap: wrap;
             gap: 1rem;
         }
 
-        .search-box {
+        .search-container {
             position: relative;
             flex-grow: 1;
         }
 
-        .search-box svg {
+        .search-container svg {
             position: absolute;
-            left: 0.75rem;
+            left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 20px;
+            height: 20px;
             color: var(--text-secondary);
         }
 
-        .search-box input {
+        .search-input {
             width: 100%;
-            max-width: 400px;
-            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+            padding: 0.75rem 1rem 0.75rem 3rem;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             box-sizing: border-box;
         }
-
-        .search-box input:focus {
+        
+        .search-input:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
-        .filter-buttons {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .filter-btn,
-        .dropdown-btn {
+        .filter-btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1rem;
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
+            color: var(--text-primary);
         }
-
-        .filter-btn svg,
-        .dropdown-btn svg {
-            width: 1.25rem;
-            height: 1.25rem;
+        
+        .filter-btn svg {
+            width: 20px;
+            height: 20px;
             color: var(--text-secondary);
         }
 
-        /* Tabel Pengguna */
-        .user-table-wrapper {
-            overflow-x: auto;
-        }
-
+        /* User Table */
         .user-table {
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
-        }
-
-        .user-table th,
-        .user-table td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        .user-table th {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .user-table td {
             font-size: 0.9rem;
-            color: var(--text-primary);
+        }
+
+        .user-table th, .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-table thead th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
         }
 
         .user-table tbody tr:last-child td {
             border-bottom: none;
         }
-
-        .user-table .user-name {
-            font-weight: 600;
+        
+        .user-table td {
+            font-weight: 500;
+        }
+        
+        .user-table td:nth-child(2) { /* Email column */
+            color: var(--text-secondary);
+            font-weight: 400;
         }
 
-        /* Badge untuk Role dan Status */
-        .badge {
+        .role-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
             font-size: 0.8rem;
             font-weight: 600;
-            text-align: center;
         }
 
-        .badge-siswa {
+        .role-badge.siswa {
+            /* This is a guess based on typical UI. Image shows a dark badge like Guru. 
+               Feel free to change it to match the Guru style. */
             background-color: var(--role-siswa-bg);
             color: var(--role-siswa-text);
         }
 
-        .badge-guru {
+        .role-badge.guru {
             background-color: var(--role-guru-bg);
             color: var(--role-guru-text);
         }
-
-        .badge-aktif {
-            background-color: var(--status-active-bg);
-            color: var(--status-active-text);
-        }
-
-        /* Tombol Aksi di Tabel */
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            padding: 0.25rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s, color 0.2s;
-        }
-
-        .action-btn:hover {
-            background-color: #f3f4f6;
-        }
-
-        .action-btn svg {
-            width: 1.25rem;
-            height: 1.25rem;
-        }
-
-        .action-btn.edit-btn:hover {
-            color: var(--edit-color);
-        }
-
-        .action-btn.delete-btn:hover {
-            color: var(--delete-color);
-        }
-
-        /* === STYLE BARU UNTUK MODAL/POP-UP === */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(17, 24, 39, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            position: relative;
-            background-color: var(--card-background);
-            border-radius: 0.75rem;
-            padding: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-header h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .modal-header p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin: 0.25rem 0 0 0;
-        }
-
-        .close-modal-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            color: var(--text-secondary);
-        }
-
-        .close-modal-btn svg {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-
-        .modal-body .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .modal-body label,
-        .modal-body .label-title {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-body input[type="text"],
-        .modal-body input[type="email"],
-        .modal-body input[type="password"],
-        .modal-body select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        .modal-body input:focus,
-        .modal-body select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-        }
-
-        .modal-body input[name="email"] {
-            background-color: #f3f4f6;
-            color: var(--text-secondary);
-        }
-
-        /* Style untuk Radio Button */
-        .radio-group {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-top: 0.75rem;
-        }
-
-        .radio-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .radio-item input[type="radio"] {
-            width: auto;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            margin-top: 2rem;
-        }
-
-        .modal-footer .btn {
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .modal-footer .btn-secondary {
-            background-color: var(--card-background);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .modal-footer .btn-primary {
-            background-color: var(--primary-button-bg);
-            color: var(--primary-button-text);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
     </style>
 </head>
-
 <body>
 
     <div class="container">
-        <header class="page-header">
-            <div>
+        <header class="main-header">
+            <div class="header-title">
                 <h1>Manajemen Pengguna</h1>
                 <p>Kelola data guru dan siswa di sistem LMS</p>
             </div>
-            <button id="show-add-modal-btn" class="add-user-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            <button class="add-user-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.5 21h-5.25A12.318 12.318 0 014 19.235z" />
                 </svg>
-                Tambah Pengguna
+                <span>Tambah Pengguna</span>
             </button>
         </header>
 
-        <main class="user-card">
+        <main class="user-management-card">
             <div class="card-header">
                 <h2>Daftar Pengguna</h2>
                 <p>Total 5 pengguna ditemukan</p>
             </div>
-            <div class="filter-controls">
-                <div class="search-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                    </svg>
-                    <input type="text" placeholder="Cari nama, email, NISN...">
-                </div>
-                <div class="filter-buttons">
-                    <button class="filter-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 3c2.755 0 5.455.232 7.973.697.538.084.966.546.966 1.083V21h-2v-2.583a1 1 0 00-.5-1.417c-2.833-1.666-6.167-1.666-9 0a1 1 0 00-.5 1.417V21H4V4.78c0-.537.428-1 .966-1.083C7.485 3.232 10.185 3 12 3zm0 0v6.167a1 1 0 01-.5 1.417c-2.833 1.666-6.167 1.666-9 0V4.78a1.996 1.996 0 011.05-.285C7.485 4.232 10.185 4 12 4zm0 0c1.815 0 4.515.232 7.034.697A1.996 1.996 0 0120 4.78v4.834c-2.833-1.667-6.167-1.667-9 0a1 1 0 01-.5-1.417V3z" />
-                        </svg>
-                    </button>
-                    <button class="dropdown-btn">
-                        Semua
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
 
-            <div class="user-table-wrapper">
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>NISN/NUPTK</th>
-                            <th>Kelas</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-name="Ahmad Pratama" data-email="ahmad.pratama@smkn5malang.sch.id" data-role="Siswa"
-                            data-nisn="0012345678" data-gender="Laki-laki">
-                            <td class="user-name">Ahmad Pratama</td>
-                            <td>ahmad.pratama@smkn5malang.sch.id</td>
-                            <td><span class="badge badge-siswa">Siswa</span></td>
-                            <td>0012345678</td>
-                            <td>XI RPL 1</td>
-                            <td><span class="badge badge-aktif">Aktif</span></td>
-                            <td class="actions">
-                                <button class="action-btn edit-btn" title="Edit"><svg xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                    </svg></button>
-                                <button class="action-btn delete-btn" title="Delete"><svg
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                    </svg></button>
-                            </td>
-                        </tr>
-                        <tr data-name="Ibu Siti Nurhaliza" data-email="siti.nurhaliza@smkn5malang.sch.id"
-                            data-role="Guru" data-nisn="1234567890123456" data-gender="Perempuan">
-                            <td class="user-name">Ibu Siti Nurhaliza</td>
-                            <td>siti.nurhaliza@smkn5malang.sch.id</td>
-                            <td><span class="badge badge-guru">Guru</span></td>
-                            <td>1234567890123456</td>
-                            <td>-</td>
-                            <td><span class="badge badge-aktif">Aktif</span></td>
-                            <td class="actions">
-                                <button class="action-btn edit-btn" title="Edit"><svg xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                    </svg></button>
-                                <button class="action-btn delete-btn" title="Delete"><svg
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                    </svg></button>
-                            </td>
-                        </tr>
-                        <tr data-name="Budi Santoso" data-email="budi.santoso@smkn5malang.sch.id" data-role="Siswa"
-                            data-nisn="0012345679" data-gender="Laki-laki">
-                            <td class="user-name">Budi Santoso</td>
-                            <td>budi.santoso@smkn5malang.sch.id</td>
-                            <td><span class="badge badge-siswa">Siswa</span></td>
-                            <td>0012345679</td>
-                            <td>XI RPL 1</td>
-                            <td><span class="badge badge-aktif">Aktif</span></td>
-                            <td class="actions">
-                                <button class="action-btn edit-btn" title="Edit"><svg xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                    </svg></button>
-                                <button class="action-btn delete-btn" title="Delete"><svg
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                    </svg></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="toolbar">
+                <div class="search-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Cari nama, email, NISN...">
+                </div>
+                <button class="filter-btn">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.572a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                    </svg>
+                    <span>Semua</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:16px; height:16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>
             </div>
+            
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>NISN/NUPTK</th>
+                        <th>Kelas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ahmad Pratama</td>
+                        <td>ahmad.pratama@smkn5malang.sch.id</td>
+                        <td><span class="role-badge siswa">Siswa</span></td>
+                        <td>0012345678</td>
+                        <td>XI RPL 1</td>
+                    </tr>
+                    <tr>
+                        <td>Ibu Siti Nurhaliza</td>
+                        <td>siti.nurhaliza@smkn5malang.sch.id</td>
+                        <td><span class="role-badge guru">Guru</span></td>
+                        <td>1234567890123456</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Budi Santoso</td>
+                        <td>budi.santoso@smkn5malang.sch.id</td>
+                        <td><span class="role-badge siswa">Siswa</span></td>
+                        <td>0012345679</td>
+                        <td>XI RPL 2</td>
+                    </tr>
+                    <tr>
+                        <td>Bapak Ridwan Kamil</td>
+                        <td>ridwan.kamil@smkn5malang.sch.id</td>
+                        <td><span class="role-badge guru">Guru</span></td>
+                        <td>1234567890123457</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Citra Dewi</td>
+                        <td>citra.dewi@smkn5malang.sch.id</td>
+                        <td><span class="role-badge siswa">Siswa</span></td>
+                        <td>0012345680</td>
+                        <td>XI TKJ 1</td>
+                    </tr>
+                </tbody>
+            </table>
         </main>
     </div>
 
-    <div id="user-modal" class="modal-overlay">
-        <div class="modal-content">
-            <header class="modal-header">
-                <div>
-                    <h2 id="modal-title">Tambah Pengguna Baru</h2>
-                    <p>Masukkan data pengguna yang akan didaftarkan ke sistem</p>
-                </div>
-                <button class="close-modal-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </header>
-            <div class="modal-body">
-                <form id="user-form" novalidate>
-                    <div class="form-group">
-                        <label for="nama">Nama Lengkap</label>
-                        <input type="text" name="nama" placeholder="Masukkan nama lengkap">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" placeholder="nama@smkn5malang.sch.id">
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Role</label>
-                        <select name="role">
-                            <option value="" disabled selected>Pilih role</option>
-                            <option value="Siswa">Siswa</option>
-                            <option value="Guru">Guru</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nisn_nuptk">NISN/NUPTK</label>
-                        <input type="text" name="nisn_nuptk" placeholder="Masukkan NISN atau NUPTK">
-                    </div>
-
-                    <div class="form-group">
-                        <div class="label-title">Jenis Kelamin</div>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="laki" name="jenis_kelamin" value="Laki-laki">
-                                <label for="laki">Laki-laki</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="perempuan" name="jenis_kelamin" value="Perempuan">
-                                <label for="perempuan">Perempuan</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" placeholder="Minimal 6 karakter">
-                    </div>
-                    <div class="form-group">
-                        <label for="konfirmasi_password">Konfirmasi Password</label>
-                        <input type="password" name="konfirmasi_password" placeholder="Ketik ulang password">
-                    </div>
-                </form>
-            </div>
-            <footer class="modal-footer">
-                <button class="btn btn-secondary close-modal-btn">Batal</button>
-                <button id="modal-submit-btn" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" style="width:1.25rem; height:1.25rem;">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.5 21h-5.034A12.318 12.318 0 014 19.235z" />
-                    </svg>
-                    <span>Tambah Pengguna</span>
-                </button>
-            </footer>
-        </div>
-    </div>
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Elemen Modal
-            const modal = document.getElementById('user-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalSubmitBtn = document.getElementById('modal-submit-btn').querySelector('span');
-            const userForm = document.getElementById('user-form');
-
-            // Tombol Pembuka Modal
-            const openAddModalBtn = document.getElementById('show-add-modal-btn');
-            const editBtns = document.querySelectorAll('.edit-btn');
-
-            // Tombol Penutup Modal
-            const closeBtns = document.querySelectorAll('.close-modal-btn');
-
-            const openModal = () => modal.classList.add('active');
-            const closeModal = () => modal.classList.remove('active');
-
-            // Event listener untuk membuka modal "Tambah Pengguna"
-            openAddModalBtn.addEventListener('click', () => {
-                modalTitle.textContent = 'Tambah Pengguna Baru';
-                modalSubmitBtn.textContent = 'Tambah Pengguna';
-                userForm.reset();
-                openModal();
-            });
-
-            // Event listener untuk setiap tombol "Edit"
-            editBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    modalTitle.textContent = 'Edit Pengguna';
-                    modalSubmitBtn.textContent = 'Simpan Perubahan';
-
-                    const userRow = e.currentTarget.closest('tr');
-                    const userData = userRow.dataset;
-
-                    // Isi form dengan data yang ada
-                    userForm.querySelector('[name="nama"]').value = userData.name;
-                    userForm.querySelector('[name="email"]').value = userData.email;
-                    userForm.querySelector('[name="role"]').value = userData.role;
-
-                    // ==== JAVASCRIPT BARU: Mengisi data NISN & Jenis Kelamin ====
-                    userForm.querySelector('[name="nisn_nuptk"]').value = userData.nisn;
-
-                    // Pilih radio button yang sesuai
-                    if (userData.gender) {
-                        const genderRadio = userForm.querySelector(`input[name="jenis_kelamin"][value="${userData.gender}"]`);
-                        if (genderRadio) {
-                            genderRadio.checked = true;
-                        }
-                    } else {
-                        // Jika data gender tidak ada, kosongkan pilihan
-                        userForm.querySelectorAll('input[name="jenis_kelamin"]').forEach(radio => radio.checked = false);
-                    }
-
-                    userForm.querySelector('[name="password"]').value = '';
-                    userForm.querySelector('[name="konfirmasi_password"]').value = '';
-
-                    openModal();
-                });
-            });
-
-            // Event listener untuk semua tombol penutup modal
-            closeBtns.forEach(btn => {
-                btn.addEventListener('click', closeModal);
-            });
-
-            // Event listener untuk menutup modal saat klik di luar area konten
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-        });
-    </script>
-
 </body>
-
 </html>

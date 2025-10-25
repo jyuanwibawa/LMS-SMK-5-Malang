@@ -10,10 +10,15 @@
     <style>
         /* CSS Sidebar */
         :root {
+            --bg-color: #f7f7f8;
             --card-bg: #FFFFFF;
-            --text-primary: #1A202C;
-            --text-secondary: #718096;
-            --border-color: #E2E8F0;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #E5E7EB;
+            --primary-button-bg: #111827;
+            --primary-button-text: #ffffff;
+            --role-siswa-bg: #e0f2fe;
+            --role-siswa-text: #0ea5e9;
             --dark: #121212;
         }
 
@@ -25,7 +30,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
         }
 
         .sidebar {
@@ -154,7 +160,8 @@
             padding: 2rem;
         }
 
-        .page-header {
+        .container { max-width: 1200px; margin: 0 auto; }
+        .main-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -163,22 +170,22 @@
             gap: 1rem;
         }
 
-        .page-header h1 {
+        .main-header h1 {
             font-size: 2rem;
             font-weight: 700;
         }
 
-        .page-header p {
+        .main-header p {
             font-size: 1rem;
-            color: #6b7280;
+            color: var(--text-secondary);
         }
 
         .add-user-btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background-color: #111827;
-            color: #ffffff;
+            background-color: var(--primary-button-bg);
+            color: var(--primary-button-text);
             border: none;
             border-radius: 0.5rem;
             padding: 0.75rem 1.25rem;
@@ -186,13 +193,16 @@
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
+            transition: background-color .2s, opacity .2s;
         }
 
-        .user-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        .add-user-btn:hover { opacity: .9; }
+
+        .user-management-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
             padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0,0,0,.1);
             overflow: hidden;
         }
 
@@ -206,34 +216,32 @@
             color: #6b7280;
         }
 
-        .user-table-wrapper {
-            overflow-x: auto;
-        }
+            .user-table-wrapper {
+                overflow-x: auto;
+            }
 
-        .user-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            margin-top: 1.5rem;
-        }
+            .toolbar { display:flex; justify-content: space-between; align-items:center; margin-bottom:1.5rem; gap:1rem; flex-wrap: wrap; }
+            .search-container { position: relative; flex-grow: 1; }
+            .search-container svg { position:absolute; left:1rem; top:50%; transform:translateY(-50%); width:20px; height:20px; color: var(--text-secondary); }
+            .search-input { width:100%; padding: .75rem 1rem .75rem 3rem; border:1px solid var(--border-color); border-radius:8px; font-size:.9rem; box-sizing: border-box; }
+            .search-input:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.2); }
+            .filter-btn { display:inline-flex; align-items:center; gap:.5rem; background-color: var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:.75rem 1rem; font-size:.9rem; font-weight:500; cursor:pointer; color: var(--text-primary); }
+            .filter-btn svg { width:20px; height:20px; color: var(--text-secondary); }
 
-        .user-table th,
-        .user-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
+            .user-table { width:100%; border-collapse: collapse; text-align:left; margin-top: 1.5rem; font-size: .9rem; }
+            
+            .user-table th, .user-table td { padding: 1rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; white-space: nowrap; }
 
-        .user-table th {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-        }
+            .user-table th {
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+                text-transform: uppercase;
+            }
 
-        .user-table .user-name {
-            font-weight: 600;
+            .user-table .user-name {
+                font-weight: 600;
+            }
         }
 
         .badge {
@@ -258,6 +266,10 @@
             background-color: #fef3c7;
             color: #92400e;
         }
+
+        .role-badge { display:inline-block; padding:.25rem .75rem; border-radius:9999px; font-size:.8rem; font-weight:600; }
+        .role-badge.siswa { background-color: var(--role-siswa-bg); color: var(--role-siswa-text); }
+        .role-badge.guru { background-color: var(--primary-button-bg); color: var(--primary-button-text); }
 
         .badge-aktif {
             background-color: #dcfce7;
@@ -298,15 +310,21 @@
     @include('partials._sidebar-admin')
 
     <main class="main-content">
-        <header class="page-header">
+      <div class="container">
+        <header class="main-header">
             <div>
                 <h1>Manajemen Pengguna</h1>
                 <p>Kelola data guru dan siswa di sistem LMS</p>
             </div>
             <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                 <form action="{{ route('admin.users.index') }}" method="GET" style="display:flex;gap:8px;align-items:center;">
-                    <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari nama, email, NISN/NUPTK, role" style="border:1px solid #e5e7eb;border-radius:8px;padding:10px;min-width:260px;" />
-                    <button type="submit" class="add-user-btn" style="background:#111827;color:#fff;">Cari</button>
+                    <div class="search-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <input class="search-input" type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari nama, email, NISN/NUPTK, role" />
+                    </div>
+                    <button type="submit" class="add-user-btn">Cari</button>
                     @if(!empty($q))
                         <a href="{{ route('admin.users.index') }}" class="add-user-btn" style="background:#e5e7eb;color:#111827;">Reset</a>
                     @endif
@@ -346,7 +364,7 @@
             </form>
         </div>
 
-        <div class="user-card">
+        <div class="user-management-card">
             <div class="card-header">
                 <h2>Daftar Pengguna</h2>
                 <p>Total {{ $users->count() }} pengguna ditemukan</p>

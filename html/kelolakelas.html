@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengelolaan Kelas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variabel & Reset Dasar --- */
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color-light: #e7f5ee;
+            --accent-color-dark: #28a745;
+            --button-bg: #212529;
+            --button-text: #ffffff;
+            --danger-color: #dc3545;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-primary); line-height: 1.6; }
+        .hidden { display: none; }
+
+        /* --- Layout Utama --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* Header Halaman Detail (dengan tombol kembali) */
+        header.detail-header { margin-bottom: 1.5rem; }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            padding: 0;
+        }
+        .back-button:hover { color: var(--text-secondary); }
+        
+        header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+        /* --- Komponen Tab --- */
+        .tabs { margin: 2rem 0 1.5rem 0; background-color: #e9ecef; border-radius: 12px; padding: 5px; display: inline-block; }
+        .tab-link { font-family: 'Inter', sans-serif; border: none; padding: 0.75rem 1.5rem; border-radius: 9px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s ease-in-out; }
+        .tab-link.active { background-color: var(--card-bg); color: var(--text-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .tab-link:not(.active) { background-color: transparent; color: var(--text-secondary); }
+
+        /* --- Card & Card Header --- */
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-title h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .card-title p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* --- Tombol --- */
+        .add-button { background-color: var(--button-bg); color: var(--button-text); border: none; padding: 0.7rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background-color 0.2s; }
+        .add-button:hover { background-color: #343a40; }
+        
+        .icon-button { background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--text-secondary); transition: color 0.2s; display: flex; align-items: center; }
+        .icon-button svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .icon-button:hover { color: var(--text-primary); }
+        
+        .icon-button span { margin-left: 0.4rem; font-weight: 500; font-size: 0.9rem; color: var(--danger-color); transition: color 0.2s; }
+        .icon-button:hover span { color: var(--danger-color); }
+        .icon-button.delete:hover,
+        .icon-button.delete:hover span { color: var(--danger-color); }
+
+        /* === Gaya DAFTAR SISWA === */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; vertical-align: middle; font-size: 0.9rem; }
+        thead th { font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); }
+        tbody tr { border-bottom: 1px solid var(--border-color); }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td { color: var(--text-primary); font-weight: 500; }
+        tbody td.actions { width: 1%; white-space: nowrap; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+        .status-badge.active { background-color: var(--accent-color-light); color: var(--accent-color-dark); }
+        .actions { display: flex; gap: 0.75rem; align-items: center; }
+
+        /* === Gaya POPUP / MODAL === */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(33, 37, 41, 0.5); z-index: 1000; }
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 1001; width: 90%; max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .modal-header h2 { font-size: 1.25rem; }
+        .modal-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem; }
+        .close-button { font-size: 2rem; font-weight: 300; line-height: 1; color: var(--text-secondary); background: none; border: none; cursor: pointer; }
+        .modal-body { padding: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-group input:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
+        .form-row { display: flex; gap: 1rem; }
+        .form-row .form-group { flex: 1; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); background-color: var(--bg-color); border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+        .button-secondary { background-color: #e9ecef; color: var(--text-primary); border: 1px solid #dee2e6; padding: 0.7rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .button-secondary:hover { background-color: #ced4da; }
+        .button-primary { background-color: var(--button-bg); color: var(--button-text); border: none; padding: 0.7rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .button-primary:hover { background-color: #495057; }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <header class="detail-header">
+            <button id="tombolKembali" class="back-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Kembali</span>
+            </button>
+            <h1>Pengelolaan Kelas XI RPL 1</h1>
+            <p class="subtitle">Tahun Ajaran 2025/2026 • 28 siswa • 5 guru</p>
+        </header>
+
+        <div class="tabs">
+            <button id="pesertaDidikTab" class="tab-link active">Peserta Didik</button>
+            <button id="guruMapelTab" class="tab-link">Guru & Mata Pelajaran</button>
+        </div>
+
+        <div class="card">
+            <div id="pesertaDidikContent">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2>Daftar Siswa</h2>
+                        <p>Kelola siswa yang terdaftar di kelas ini</p>
+                    </div>
+                    <button class="add-button" id="openSiswaModalBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
+                        <span>Tambah Siswa</span>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Nama</th><th>NISN</th><th>Email</th><th>Status</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ahmad Pratama</td>
+                                <td>0012345678</td>
+                                <td>ahmad.pratama@smkn5malang.sch.id</td>
+                                <td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button delete" aria-label="Keluarkan">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                        <span>Keluarkan</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Budi Santoso</td>
+                                <td>0012345679</td>
+                                <td>budi.santoso@smkn5malang.sch.id</td>
+                                <td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button delete" aria-label="Keluarkan">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                        <span>Keluarkan</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Citra Dewi</td>
+                                <td>0012345680</td>
+                                <td>citra.dewi@smkn5malang.sch.id</td>
+                                <td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button delete" aria-label="Keluarkan">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                        <span>Keluarkan</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="guruMapelContent" class="hidden">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2>Guru & Mata Pelajaran</h2>
+                        <p>Daftar guru dan mapel yang diajarkan di kelas ini</p>
+                    </div>
+                </div>
+                <p>Belum ada data guru dan mata pelajaran.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="modalOverlay" class="modal-overlay hidden"></div>
+
+    <div id="modalTambahSiswa" class="modal hidden">
+        <div class="modal-header">
+            <div>
+                <h2>Tambah Siswa</h2>
+                <p>Tambahkan siswa baru ke kelas ini</p>
+            </div>
+            <button class="close-button" id="closeSiswaModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label for="namaSiswa">Nama Siswa</label>
+                    <input type="text" id="namaSiswa" placeholder="Contoh: Ahmad Pratama">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nisn">NISN</label>
+                        <input type="text" id="nisn" placeholder="0012345678">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailSiswa">Email</label>
+                        <input type="email" id="emailSiswa" placeholder="ahmad.pratama@...">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="button-secondary" id="batalSiswaBtn">Batal</button>
+            <button class="button-primary">Simpan</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Ambil Semua Elemen ---
+        const tombolKembali = document.getElementById('tombolKembali');
+        
+        // Elemen Tab
+        const pesertaDidikTab = document.getElementById('pesertaDidikTab');
+        const guruMapelTab = document.getElementById('guruMapelTab');
+        const pesertaDidikContent = document.getElementById('pesertaDidikContent');
+        const guruMapelContent = document.getElementById('guruMapelContent');
+
+        // Elemen Modal
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTambahSiswa = document.getElementById('modalTambahSiswa');
+        const openSiswaModalBtn = document.getElementById('openSiswaModalBtn');
+        const closeSiswaModalBtn = document.getElementById('closeSiswaModalBtn');
+        const batalSiswaBtn = document.getElementById('batalSiswaBtn');
+
+        // --- LOGIKA Tombol Kembali ---
+        tombolKembali.addEventListener('click', () => {
+            history.back(); // Kembali ke halaman sebelumnya
+        });
+
+        // --- LOGIKA TAB ---
+        pesertaDidikTab.addEventListener('click', () => {
+            guruMapelTab.classList.remove('active');
+            pesertaDidikTab.classList.add('active');
+            guruMapelContent.classList.add('hidden');
+            pesertaDidikContent.classList.remove('hidden');
+        });
+
+        guruMapelTab.addEventListener('click', () => {
+            pesertaDidikTab.classList.remove('active');
+            guruMapelTab.classList.add('active');
+            pesertaDidikContent.classList.add('hidden');
+            guruMapelContent.classList.remove('hidden');
+        });
+
+        // --- LOGIKA MODAL (POPUP) ---
+        const openModal = (modal) => {
+            modal.classList.remove('hidden');
+            modalOverlay.classList.remove('hidden');
+        };
+        const closeModal = (modal) => {
+            modal.classList.add('hidden');
+            modalOverlay.classList.add('hidden');
+        };
+
+        // Buka Modal
+        openSiswaModalBtn.addEventListener('click', () => openModal(modalTambahSiswa));
+        
+        // Tutup Modal (via X atau Batal)
+        closeSiswaModalBtn.addEventListener('click', () => closeModal(modalTambahSiswa));
+        batalSiswaBtn.addEventListener('click', () => closeModal(modalTambahSiswa));
+
+        // Tutup Modal (via Overlay)
+        modalOverlay.addEventListener('click', () => {
+            closeModal(modalTambahSiswa);
+        });
+    </script>
+    
+</body>
+</html>

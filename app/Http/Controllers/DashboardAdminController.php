@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Imports\UsersImport;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Role;
+use App\Models\SchoolClass;
+use App\Models\Course;
+use App\Models\Teaching;
 
 class DashboardAdminController extends Controller
 {
@@ -140,11 +143,44 @@ class DashboardAdminController extends Controller
 
     public function academic()
     {
-        return view('admin.academic.index');
+        $classes = SchoolClass::withCount(['enrollments as students_count'])->orderBy('name')->get();
+
+        $courses = Course::with('teachings')->orderBy('name')->get();
+
+        return view('admin.academic.index', [
+            'classes' => $classes,
+            'courses' => $courses,
+        ]);
     }
 
     public function logs()
     {
         return view('admin.logs.index');
+    }
+
+    public function manageClass(SchoolClass $class)
+    {
+        $class->load([
+            'enrollments.user',
+            'teachings.user',
+            'teachings.course',
+        ]);
+
+        $studentsCount = $class->enrollments->count();
+        $teachersCount = $class->teachings->count();
+
+        // Ambil siswa yang belum terdaftar di kelas
+        $enrolledUserIds = $class->enrollments->pluck('user_id');
+        $availableStudents = \App\Models\User::whereHas('role', function($q){ $q->where('name','siswa'); })
+            ->whereNotIn('id', $enrolledUserIds)
+            ->orderBy('name')
+            ->get(['id','name','identity_number','email']);
+
+        return view('admin.academic.kelolakelas', [
+            'class' => $class,
+            'studentsCount' => $studentsCount,
+            'teachersCount' => $teachersCount,
+            'availableStudents' => $availableStudents,
+        ]);
     }
 }

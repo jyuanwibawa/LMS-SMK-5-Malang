@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardGuruController;
 use App\Http\Controllers\DashboardSiswaController;
+use App\Http\Controllers\Admin\AcademicClassController;
+use App\Http\Controllers\Admin\CourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,9 +49,24 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/import', [DashboardAdminController::class, 'importUsers'])->name('users.import');
         Route::put('/users/{user}', [DashboardAdminController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [DashboardAdminController::class, 'destroyUser'])->name('users.destroy');
-        Route::get('/academic', [DashboardAdminController::class, 'academic'])->name('academic.index');
+        // Halaman index Manajemen Akademik di /admin/akademik
+        Route::get('/akademik', [DashboardAdminController::class, 'academic'])->name('academic.index');
+        Route::get('/akademik/kelas/{class}', [DashboardAdminController::class, 'manageClass'])->name('academic.classes.show');
+
+        // CRUD Kelas
+        Route::post('/classes', [AcademicClassController::class, 'store'])->name('classes.store');
+        Route::post('/classes/{class}/enrollments', [AcademicClassController::class, 'storeEnrollment'])->name('classes.enrollments.store');
+        Route::put('/classes/{class}', [AcademicClassController::class, 'update'])->name('classes.update');
+        Route::delete('/classes/{class}', [AcademicClassController::class, 'destroy'])->name('classes.destroy');
+        Route::delete('/classes/{class}/enrollments/{enrollment}', [AcademicClassController::class, 'destroyEnrollment'])->name('classes.enrollments.destroy');
+
+        // CRUD Mata Pelajaran
+        Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
+        Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+        Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
         Route::get('/logs', [DashboardAdminController::class, 'logs'])->name('logs.index');
         // Tambahkan rute admin lainnya di sini...
+
     });
 
     // // GRUP RUTE UNTUK GURU
