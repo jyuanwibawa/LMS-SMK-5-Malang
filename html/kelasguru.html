@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelas Saya</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Pengaturan Dasar & Font --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Latar belakang abu-abu muda */
+            color: #1a202c; /* Warna teks default */
+            padding: 40px; /* Jarak dari tepi layar */
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        /* --- Kontainer Utama --- */
+        .container {
+            max-width: 1200px; /* Lebar maksimum konten */
+            margin: 0 auto; /* Pusatkan konten */
+        }
+
+        .container h1 {
+            font-size: 2.25rem; /* 36px */
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: #111827; /* Warna judul utama */
+        }
+
+        .container > p {
+            font-size: 1rem; /* 16px */
+            color: #6B7281; /* Warna subjudul */
+            margin: 0 0 32px 0; /* Jarak bawah */
+        }
+
+        /* --- Grid untuk Kartu Kelas --- */
+        .class-grid {
+            display: grid;
+            /* Membuat kolom responsif:
+              - 'auto-fit': Buat kolom sebanyak mungkin.
+              - 'minmax(300px, 1fr)': Setiap kolom minimal 300px, 
+                dan jika ada sisa ruang, bagi rata (1fr).
+                Ini akan membuat kartu otomatis stack (tersusun ke bawah) di layar HP.
+            */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px; /* Jarak antar kartu */
+        }
+
+        /* --- Styling Kartu Individual --- */
+        .class-card {
+            background-color: #ffffff; /* Warna dasar kartu */
+            border-radius: 16px; /* Sudut melengkung */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Bayangan halus */
+            overflow: hidden; /* Penting agar header tidak tumpah */
+            display: flex;
+            flex-direction: column; /* Menyusun header, body, footer ke bawah */
+        }
+
+        /* --- Header Kartu (Bagian Berwarna) --- */
+        .card-header {
+            padding: 24px;
+            color: #ffffff;
+        }
+
+        /* Variasi Warna Header */
+        .card-header.blue {
+            background-color: #3B82F6; /* Biru */
+        }
+
+        .card-header.purple {
+            background-color: #8B5CF6; /* Ungu */
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 700;
+            margin: 0 0 4px 0;
+        }
+
+        .card-header span {
+            font-size: 1rem; /* 16px */
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        /* --- Body Kartu (Info Jadwal & Siswa) --- */
+        .card-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px; /* Jarak antara item info */
+            flex-grow: 1; /* Membuat body memanjang, mendorong footer ke bawah */
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Jarak antara ikon dan teks */
+            color: #4B5563; /* Warna teks info */
+        }
+
+        .info-item svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+            color: #6B7281; /* Warna ikon */
+            flex-shrink: 0; /* Mencegah ikon menyusut */
+        }
+
+        .info-item span {
+            font-size: 0.9rem; /* 14.4px */
+            font-weight: 500;
+        }
+
+        /* --- Footer Kartu (Info Materi & Tombol) --- */
+        .card-footer {
+            padding: 24px;
+            background-color: #ffffff;
+            border-top: 1px solid #F3F4F6; /* Garis pemisah tipis */
+        }
+
+        .card-stats {
+            display: flex;
+            flex-wrap: wrap; /* Agar pill bisa ke bawah jika tidak muat */
+            gap: 8px; /* Jarak antar pill */
+            margin-bottom: 20px; /* Jarak ke tombol */
+        }
+
+        .stat-pill {
+            background-color: #F3F4F6; /* Warna pill abu-abu */
+            color: #374151; /* Warna teks pill */
+            font-size: 0.75rem; /* 12px */
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 9999px; /* Membuat bentuk pil */
+        }
+
+        /* --- Tombol 'Masuk Kelas' --- */
+        .btn-masuk {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Teks di kiri, ikon di kanan */
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #111827; /* Warna tombol hitam */
+            color: #ffffff; /* Warna teks tombol */
+            border: none;
+            border-radius: 8px; /* Sudut tombol */
+            font-size: 0.9rem; /* 14.4px */
+            font-weight: 600;
+            text-decoration: none; /* Hilangkan garis bawah link */
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            box-sizing: border-box; /* Agar padding tidak merusak width */
+        }
+
+        .btn-masuk:hover {
+            background-color: #374151; /* Warna tombol saat hover */
+        }
+
+        .btn-masuk svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Kelas Saya</h1>
+        <p>Daftar semua kelas yang Anda ajar semester ini</p>
+
+        <div class="class-grid">
+
+            <div class="class-card">
+                <div class="card-header blue">
+                    <h2>Matematika</h2>
+                    <span>XI RPL 1</span>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Senin & Rabu, 07:30 - 09:00</span>
+                    </div>
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>28 siswa</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="card-stats">
+                        <span class="stat-pill">12 Materi</span>
+                        <span class="stat-pill">5 Tugas</span>
+                    </div>
+                    <a href="#" class="btn-masuk">
+                        Masuk Kelas
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="class-card">
+                <div class="card-header blue">
+                    <h2>Matematika</h2>
+                    <span>XI RPL 2</span>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Selasa & Kamis, 07:30 - 09:00</span>
+                    </div>
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>30 siswa</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="card-stats">
+                        <span class="stat-pill">12 Materi</span>
+                        <span class="stat-pill">5 Tugas</span>
+                    </div>
+                    <a href="#" class="btn-masuk">
+                        Masuk Kelas
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="class-card">
+                <div class="card-header purple">
+                    <h2>Pemrograman Web</h2>
+                    <span>XI RPL 1</span>
+                </div>
+                <div class-"card-body">
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Rabu & Jumat, 10:00 - 12:00</span>
+                    </div>
+                    <div class="info-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>28 siswa</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="card-stats">
+                        <span class="stat-pill">15 Materi</span>
+                        <span class="stat-pill">7 Tugas</span>
+                    </div>
+                    <a href="#" class="btn-masuk">
+                        Masuk Kelas
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+        </div> </div> </body>
+</html>

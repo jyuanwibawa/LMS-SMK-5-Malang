@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardGuruController;
+use App\Http\Controllers\Guru\KelasController;
 use App\Http\Controllers\DashboardSiswaController;
 use App\Http\Controllers\Admin\AcademicClassController;
 use App\Http\Controllers\Admin\CourseController;
@@ -73,11 +74,12 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    // // GRUP RUTE UNTUK GURU
-    // Route::prefix('guru')->name('guru.')->group(function () {
-    //     Route::get('/dashboard', [DashboardGuruController::class, 'index'])->name('dashboard');
-    //     // Tambahkan rute guru lainnya di sini...
-    // });
+    // GRUP RUTE UNTUK GURU
+    Route::prefix('guru')->name('guru.')->group(function () {
+        Route::get('/dashboard', [DashboardGuruController::class, 'index'])->name('dashboard');
+        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
+        // Tambahkan rute guru lainnya di sini...
+    });
 
     // // GRUP RUTE UNTUK SISWA
     // Route::prefix('siswa')->name('siswa.')->group(function () {

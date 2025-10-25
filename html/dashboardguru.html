@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Content</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variabel & Reset Dasar --- */
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --card-inner-bg: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color-light: #e7f5ee;
+            --accent-color-dark: #28a745;
+            --button-bg: #212529;
+            --button-text: #ffffff;
+            --danger-color: #dc3545;
+            /* Warna Ikon Dashboard */
+            --color-blue-bg: #e7f3ff;
+            --color-blue-dark: #007bff;
+            --color-green-bg: #e7f5ee;
+            --color-green-dark: #28a745;
+            --color-orange-bg: #fff8e1;
+            --color-orange-dark: #ffc107;
+            --color-purple-bg: #f3e8ff;
+            --color-purple-dark: #6f42c1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-primary); line-height: 1.6; }
+        .hidden { display: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* --- Navigasi Demo (Pengganti Sidebar) --- */
+        .demo-nav {
+            background-color: #343a40;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .demo-nav button {
+            background: none;
+            border: 1px solid #6c757d;
+            color: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .demo-nav button.active {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border-color: var(--card-bg);
+        }
+
+        /* Header Halaman */
+        header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .subtitle { color: var(--text-secondary); font-size: 1rem; }
+        header.detail-header { margin-bottom: 1.5rem; }
+        .back-button { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 600; color: var(--text-primary); background: none; border: none; cursor: pointer; margin-bottom: 1rem; padding: 0; }
+        .back-button:hover { color: var(--text-secondary); }
+
+        /* --- Komponen Tab --- */
+        .tabs { margin: 2rem 0 1.5rem 0; background-color: #e9ecef; border-radius: 12px; padding: 5px; display: inline-block; }
+        .tab-link { font-family: 'Inter', sans-serif; border: none; padding: 0.75rem 1.5rem; border-radius: 9px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s ease-in-out; }
+        .tab-link.active { background-color: var(--card-bg); color: var(--text-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .tab-link:not(.active) { background-color: transparent; color: var(--text-secondary); }
+
+        /* --- Card & Card Header --- */
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-title h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .card-title p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* --- Tombol --- */
+        .add-button { background-color: var(--button-bg); color: var(--button-text); border: none; padding: 0.7rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background-color 0.2s; }
+        .add-button:hover { background-color: #343a40; }
+        .icon-button { background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--text-secondary); transition: color 0.2s; display: flex; align-items: center; }
+        .icon-button svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .icon-button:hover { color: var(--text-primary); }
+        .icon-button span { margin-left: 0.4rem; font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); transition: color 0.2s; }
+        .icon-button:hover span { color: var(--text-primary); }
+        .icon-button.delete:hover, .icon-button.delete:hover span { color: var(--danger-color); }
+        .icon-button.delete span { color: var(--danger-color); }
+
+        /* === Gaya Halaman DASHBOARD === */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .summary-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .summary-card-info h3 { font-size: 0.9rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.25rem; }
+        .summary-card-info p { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .summary-icon svg { width: 24px; height: 24px; }
+        /* Warna Ikon */
+        .summary-icon.blue { background-color: var(--color-blue-bg); color: var(--color-blue-dark); }
+        .summary-icon.green { background-color: var(--color-green-bg); color: var(--color-green-dark); }
+        .summary-icon.orange { background-color: var(--color-orange-bg); color: var(--color-orange-dark); }
+        .summary-icon.purple { background-color: var(--color-purple-bg); color: var(--color-purple-dark); }
+        
+        .dashboard-columns {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .card-list-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .card-list-header p { font-size: 0.9rem; color: var(--text-secondary); font-weight: 400; margin-left: auto; }
+        .deadline-list, .activity-list { display: flex; flex-direction: column; gap: 1rem; }
+        .deadline-item, .activity-item {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 12px;
+            background-color: var(--card-inner-bg);
+        }
+        .deadline-item .info h4 { font-size: 0.95rem; font-weight: 600; }
+        .deadline-item .info p { font-size: 0.85rem; color: var(--text-secondary); }
+        .deadline-item .info .tag {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .activity-item .info { font-size: 0.9rem; }
+        .activity-item .info p { color: var(--text-secondary); font-size: 0.85rem; }
+        
+        /* === Gaya Halaman KELAS & DAFTAR SISWA === */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; vertical-align: middle; font-size: 0.9rem; }
+        thead th { font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); }
+        tbody tr { border-bottom: 1px solid var(--border-color); }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td { color: var(--text-primary); font-weight: 500; }
+        tbody td.actions { width: 1%; white-space: nowrap; }
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+        .status-badge.active { background-color: var(--accent-color-light); color: var(--accent-color-dark); }
+        .actions { display: flex; gap: 0.75rem; align-items: center; }
+
+        /* === Gaya Halaman MATA PELAJARAN === */
+        .subject-list { display: flex; flex-direction: column; gap: 1rem; }
+        .subject-card { display: flex; align-items: center; gap: 1.25rem; background-color: var(--card-inner-bg); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); }
+        .subject-icon { background-color: var(--text-primary); color: var(--button-text); flex-shrink: 0; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+        .subject-icon svg { width: 32px; height: 32px; }
+        .subject-info { flex-grow: 1; }
+        .subject-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .subject-info p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .subject-info span { font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
+
+        /* === Gaya POPUP / MODAL === */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(33, 37, 41, 0.5); z-index: 1000; }
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 1001; width: 90%; max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .modal-header h2 { font-size: 1.25rem; }
+        .modal-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem; }
+        .close-button { font-size: 2rem; font-weight: 300; line-height: 1; color: var(--text-secondary); background: none; border: none; cursor: pointer; }
+        .modal-body { padding: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; font-family: 'Inter', sans-serif; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: flex; gap: 1rem; }
+        .form-row .form-group { flex: 1; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); background-color: var(--bg-color); border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+        .button-secondary { background-color: #e9ecef; color: var(--text-primary); border: 1px solid #dee2e6; padding: 0.7rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        .button-primary { background-color: var(--button-bg); color: var(--button-text); border: none; padding: 0.7rem 1.2rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    
+    <nav class="demo-nav">
+        <button id="navDashboard" class="active">Dashboard</button>
+        <button id="navManajemen">Manajemen Akademik</button>
+    </nav>
+
+    <main id="halamanDashboard" class="container">
+        <header>
+            <h1>Selamat Datang, Ibu Siti Nurhaliza! 👋</h1>
+            <p class="subtitle">Berikut adalah ringkasan aktivitas mengajar Anda hari ini</p>
+        </header>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-card-info">
+                    <h3>Total Kelas</h3>
+                    <p>5</p>
+                </div>
+                <div class="summary-icon blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-info">
+                    <h3>Total Siswa</h3>
+                    <p>142</p>
+                </div>
+                <div class="summary-icon green">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-info">
+                    <h3>Tugas Aktif</h3>
+                    <p>8</p>
+                </div>
+                <div class="summary-icon orange">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-info">
+                    <h3>Menunggu Penilaian</h3>
+                    <p>23</p>
+                </div>
+                <div class="summary-icon purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-columns">
+            <div class="card">
+                <div class="card-list-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Deadline Terdekat
+                </div>
+                <div class="deadline-list">
+                    <div class="deadline-item">
+                        <div class="info">
+                            <h4><span class="tag">Kuis</span>Matematika XI RPL 1</h4>
+                            <p>Kuis Trigonometri</p>
+                            <p style="color: var(--text-primary); font-weight: 500; margin-top: 4px;">13 Oktober pukul 14.00</p>
+                        </div>
+                    </div>
+                    <div class="deadline-item">
+                        <div class="info">
+                            <h4><span class="tag" style="background-color: var(--color-blue-dark);">Tugas</span>Pemrograman Web XI RPL 2</h4>
+                            <p>Tugas HTML & CSS</p>
+                            <p style="color: var(--text-primary); font-weight: 500; margin-top: 4px;">14 Oktober pukul 23.59</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-list-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    Aktivitas Terkini
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="avatar-circle">AP</div>
+                        <div class="info">
+                            <b>Ahmad Pratama</b> mengumpulkan Tugas...
+                            <p>10 menit yang lalu</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="avatar-circle" style="background-color: var(--color-blue-dark);">BS</div>
+                        <div class="info">
+                            <b>Budi Santoso</b> menyelesaikan Kuis...
+                            <p>25 menit yang lalu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <main id="halamanManajemen" class="container hidden">
+        <header>
+            <h1>Manajemen Akademik</h1>
+            <p class="subtitle">Kelola kelas dan mata pelajaran di sistem LMS</p>
+        </header>
+
+        <div class="tabs">
+            <button id="kelasTab" class="tab-link active">Kelas</button>
+            <button id="mapelTab" class="tab-link">Mata Pelajaran</button>
+        </div>
+
+        <div class="card">
+            <div id="kelasContent">
+                <div class="card-header">
+                    <div class="card-title"><h2>Daftar Kelas</h2><p>Kelola semua kelas yang ada di sekolah</p></div>
+                    <button class="add-button" id="openKelasModalBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>Tambah Kelas</span>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Nama Kelas</th><th>Jumlah Siswa</th><th>Tahun Ajaran</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>X RPL 1</td><td>32 siswa</td><td>2025/2026</td><td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button detail-kelas-btn" aria-label="Detail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Detail</span></button>
+                                    <button class="icon-button" aria-label="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                                    <button class="icon-button delete" aria-label="Hapus"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>XI RPL 1</td><td>28 siswa</td><td>2025/2026</td><td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button detail-kelas-btn" aria-label="Detail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Detail</span></button>
+                                    <button class="icon-button" aria-label="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                                    <button class="icon-button delete" aria-label="Hapus"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="mapelContent" class="hidden">
+                 <div class="card-header">
+                    <div class="card-title"><h2>Daftar Mata Pelajaran</h2><p>Kelola semua mata pelajaran yang tersedia</p></div>
+                    <button class="add-button" id="openMapelModalBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>Tambah Mata Pelajaran</span>
+                    </button>
+                </div>
+                <div class="subject-list">
+                    <div class="subject-card">
+                        <div class="subject-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
+                        <div class="subject-info"><h3>Matematika</h3><p>Mata pelajaran matematika umum</p><span>6 kelas &bull; 3 guru</span></div>
+                        <div class="actions">
+                            <button class="icon-button" aria-label="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            <button class="icon-button delete" aria-label="Hapus"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="halamanDetailKelas" class="container hidden">
+        <header class="detail-header">
+            <button id="tombolKembali" class="back-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Kembali</span>
+            </button>
+            <h1>Pengelolaan Kelas XI RPL 1</h1>
+            <p class="subtitle">Tahun Ajaran 2025/2026 • 28 siswa • 5 guru</p>
+        </header>
+
+        <div class="tabs">
+            <button id="pesertaDidikTab" class="tab-link active">Peserta Didik</button>
+            <button id="guruMapelTab" class="tab-link">Guru & Mata Pelajaran</button>
+        </div>
+
+        <div class="card">
+            <div id="pesertaDidikContent">
+                <div class="card-header">
+                    <div class="card-title"><h2>Daftar Siswa</h2><p>Kelola siswa yang terdaftar di kelas ini</p></div>
+                    <button class="add-button" id="openSiswaModalBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
+                        <span>Tambah Siswa</span>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Nama</th><th>NISN</th><th>Email</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td>Ahmad Pratama</td><td>0012345678</td><td>ahmad.pratama@smkn5malang.sch.id</td>
+                                <td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button delete" aria-label="Keluarkan"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span>Keluarkan</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Budi Santoso</td><td>0012345679</td><td>budi.santoso@smkn5malang.sch.id</td>
+                                <td><span class="status-badge active">Aktif</span></td>
+                                <td class="actions">
+                                    <button class="icon-button delete" aria-label="Keluarkan"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span>Keluarkan</span></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="guruMapelContent" class="hidden">
+                <div class="card-header"><div class="card-title"><h2>Guru & Mata Pelajaran</h2><p>Daftar guru dan mapel yang diajarkan di kelas ini</p></div></div>
+                <p>Belum ada data guru dan mata pelajaran.</p>
+            </div>
+        </div>
+    </main>
+
+
+    <div id="modalOverlay" class="modal-overlay hidden"></div>
+
+    <div id="modalTambahKelas" class="modal hidden">
+        <div class="modal-header">
+            <div><h2>Tambah Kelas</h2><p>Tambahkan kelas baru ke dalam sistem</p></div>
+            <button class="close-button" data-close-modal="modalTambahKelas">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form><div class="form-group"><label for="namaKelas">Nama Kelas</label><input type="text" id="namaKelas" placeholder="Contoh: X RPL 1"></div><div class="form-row"><div class="form-group"><label for="tingkatan">Tingkatan</label><select id="tingkatan"><option selected disabled>Pilih Tingkatan</option><option value="X">X</option><option value="XI">XI</option><option value="XII">XII</option></select></div><div class="form-group"><label for="jurusan">Jurusan</label><select id="jurusan"><option selected disabled>Pilih Jurusan</option><option value="RPL">RPL</option><option value="TKJ">TKJ</option></select></div></div><div class="form-group"><label for="tahunAjaran">Tahun Ajaran</label><input type="text" id="tahunAjaran" placeholder="Contoh: 2025/2026"></div></form>
+        </div>
+        <div class="modal-footer">
+            <button class="button-secondary" data-close-modal="modalTambahKelas">Batal</button>
+            <button class="button-primary">Simpan</button>
+        </div>
+    </div>
+
+    <div id="modalTambahMapel" class="modal hidden">
+        <div class="modal-header">
+            <div><h2>Tambah Mata Pelajaran</h2><p>Tambahkan mata pelajaran baru</p></div>
+            <button class="close-button" data-close-modal="modalTambahMapel">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form><div class="form-group"><label for="namaMapel">Nama Mata Pelajaran</label><input type="text" id="namaMapel" placeholder="Contoh: Pemrograman Web"></div><div class="form-group"><label for="deskripsiMapel">Deskripsi</label><textarea id="deskripsiMapel" placeholder="Deskripsi singkat"></textarea></div></form>
+        </div>
+        <div class="modal-footer">
+            <button class="button-secondary" data-close-modal="modalTambahMapel">Batal</button>
+            <button class="button-primary">Simpan</button>
+        </div>
+    </div>
+
+    <div id="modalTambahSiswa" class="modal hidden">
+        <div class="modal-header">
+            <div><h2>Tambah Siswa</h2><p>Tambahkan siswa baru ke kelas ini</p></div>
+            <button class="close-button" data-close-modal="modalTambahSiswa">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form><div class="form-group"><label for="namaSiswa">Nama Siswa</label><input type="text" id="namaSiswa" placeholder="Contoh: Ahmad Pratama"></div><div class="form-row"><div class="form-group"><label for="nisn">NISN</label><input type="text" id="nisn" placeholder="0012345678"></div><div class="form-group"><label for="emailSiswa">Email</label><input type="email" id="emailSiswa" placeholder="ahmad.pratama@..."></div></div></form>
+        </div>
+        <div class="modal-footer">
+            <button class="button-secondary" data-close-modal="modalTambahSiswa">Batal</button>
+            <button class="button-primary">Simpan</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Ambil Elemen Halaman ---
+        const halamanDashboard = document.getElementById('halamanDashboard');
+        const halamanManajemen = document.getElementById('halamanManajemen');
+        const halamanDetailKelas = document.getElementById('halamanDetailKelas');
+        const semuaHalaman = [halamanDashboard, halamanManajemen, halamanDetailKelas];
+
+        // --- Ambil Elemen Navigasi ---
+        const navDashboard = document.getElementById('navDashboard');
+        const navManajemen = document.getElementById('navManajemen');
+        const detailKelasButtons = document.querySelectorAll('.detail-kelas-btn');
+        const tombolKembali = document.getElementById('tombolKembali');
+
+        // --- Ambil Elemen Tab ---
+        const kelasTab = document.getElementById('kelasTab');
+        const mapelTab = document.getElementById('mapelTab');
+        const kelasContent = document.getElementById('kelasContent');
+        const mapelContent = document.getElementById('mapelContent');
+        const pesertaDidikTab = document.getElementById('pesertaDidikTab');
+        const guruMapelTab = document.getElementById('guruMapelTab');
+        const pesertaDidikContent = document.getElementById('pesertaDidikContent');
+        const guruMapelContent = document.getElementById('guruMapelContent');
+
+        // --- Ambil Elemen Modal ---
+        const modalOverlay = document.getElementById('modalOverlay');
+        const semuaModals = document.querySelectorAll('.modal');
+        const tombolBukaModal = document.querySelectorAll('[id^="open"]'); // cth: openKelasModalBtn
+        const tombolTutupModal = document.querySelectorAll('[data-close-modal]'); // cth: data-close-modal="modalTambahKelas"
+        
+        // --- Fungsi Helper ---
+        function tampilkanHalaman(halamanAktif) {
+            semuaHalaman.forEach(h => h.classList.add('hidden'));
+            halamanAktif.classList.remove('hidden');
+        }
+
+        // --- LOGIKA NAVIGASI Halaman ---
+        navDashboard.addEventListener('click', () => {
+            tampilkanHalaman(halamanDashboard);
+            navManajemen.classList.remove('active');
+            navDashboard.classList.add('active');
+        });
+
+        navManajemen.addEventListener('click', () => {
+            tampilkanHalaman(halamanManajemen);
+            navDashboard.classList.remove('active');
+            navManajemen.classList.add('active');
+        });
+
+        detailKelasButtons.forEach(button => {
+            button.addEventListener('click', () => tampilkanHalaman(halamanDetailKelas));
+        });
+
+        tombolKembali.addEventListener('click', () => tampilkanHalaman(halamanManajemen));
+
+        // --- LOGIKA TAB Halaman Manajemen ---
+        kelasTab.addEventListener('click', () => {
+            mapelTab.classList.remove('active');
+            kelasTab.classList.add('active');
+            mapelContent.classList.add('hidden');
+            kelasContent.classList.remove('hidden');
+        });
+
+        mapelTab.addEventListener('click', () => {
+            kelasTab.classList.remove('active');
+            mapelTab.classList.add('active');
+            kelasContent.classList.add('hidden');
+            mapelContent.classList.remove('hidden');
+        });
+
+        // --- LOGIKA TAB Halaman Detail ---
+        pesertaDidikTab.addEventListener('click', () => {
+            guruMapelTab.classList.remove('active');
+            pesertaDidikTab.classList.add('active');
+            guruMapelContent.classList.add('hidden');
+            pesertaDidikContent.classList.remove('hidden');
+        });
+
+        guruMapelTab.addEventListener('click', () => {
+            pesertaDidikTab.classList.remove('active');
+            guruMapelTab.classList.add('active');
+            pesertaDidikContent.classList.add('hidden');
+            guruMapelContent.classList.remove('hidden');
+        });
+
+        // --- LOGIKA MODAL (POPUP) ---
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modalOverlay.classList.remove('hidden');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+                modalOverlay.classList.add('hidden');
+            }
+        }
+        
+        // Buka Modal
+        openKelasModalBtn.addEventListener('click', () => openModal('modalTambahKelas'));
+        openMapelModalBtn.addEventListener('click', () => openModal('modalTambahMapel'));
+        openSiswaModalBtn.addEventListener('click', () => openModal('modalTambahSiswa'));
+        
+        // Tutup Modal (via tombol X atau Batal)
+        tombolTutupModal.forEach(button => {
+            button.addEventListener('click', () => {
+                const modalId = button.getAttribute('data-close-modal');
+                closeModal(modalId);
+            });
+        });
+
+        // Tutup Modal (via Overlay)
+        modalOverlay.addEventListener('click', () => {
+            semuaModals.forEach(modal => modal.classList.add('hidden'));
+            modalOverlay.classList.add('hidden');
+        });
+
+    </script>
+    
+</body>
+</html>
