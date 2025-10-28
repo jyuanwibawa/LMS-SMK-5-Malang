@@ -12,6 +12,9 @@ class Material extends Model
         'title',
         'description',
         'file_path',
+        'file_hex',
+        'file_mime',
+        'file_name',
         'file_type',
         'uploaded_at',
     ];

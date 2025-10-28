@@ -78,6 +78,14 @@ Route::middleware('auth')->group(function () {
     Route::prefix('guru')->name('guru.')->group(function () {
         Route::get('/dashboard', [DashboardGuruController::class, 'index'])->name('dashboard');
         Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
+        Route::get('/kelas/{teaching}', [KelasController::class, 'show'])->name('kelas.show');
+        Route::post('/kelas/{teaching}/materi', [KelasController::class, 'materiStore'])->name('kelas.materi.store');
+        Route::get('/kelas/{teaching}/materi/tambah', [KelasController::class, 'materiCreate'])->name('kelas.materi.create');
+        Route::get('/kelas/{teaching}/materi/{material}/edit', [KelasController::class, 'materiEdit'])->name('kelas.materi.edit');
+        Route::put('/kelas/{teaching}/materi/{material}', [KelasController::class, 'materiUpdate'])->name('kelas.materi.update');
+        Route::delete('/kelas/{teaching}/materi/{material}', [KelasController::class, 'materiDestroy'])->name('kelas.materi.destroy');
+        Route::get('/kelas/{teaching}/materi/{material}/unduh', [KelasController::class, 'materiDownload'])->name('kelas.materi.download');
+        Route::get('/kelas/{teaching}/materi/{material}/view', [KelasController::class, 'materiView'])->name('kelas.materi.view');
         // Tambahkan rute guru lainnya di sini...
     });
 
@@ -85,5 +93,4 @@ Route::middleware('auth')->group(function () {
     // Route::prefix('siswa')->name('siswa.')->group(function () {
     //     Route::get('/dashboard', [DashboardSiswaController::class, 'index'])->name('dashboard');
     //     // Tambahkan rute siswa lainnya di sini...
-    // });
 });

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Materi Baru</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Pengaturan Dasar & Font --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Latar belakang abu-abu muda */
+            color: #111827; /* Warna teks default */
+            padding: 40px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        /* --- Kontainer Utama --- */
+        .container {
+            max-width: 900px; /* Lebar yang pas untuk form */
+            margin: 0 auto;
+        }
+
+        /* --- Header: Link Kembali & Judul --- */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #4B5563;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        .back-link:hover {
+            color: #111827;
+        }
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .page-header h1 {
+            font-size: 2.25rem; /* 36px */
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: #111827;
+        }
+
+        .page-header p {
+            font-size: 1rem; /* 16px */
+            color: #6B7281;
+            margin: 0;
+        }
+        
+        /* --- Kontainer Form (Kartu Putih) --- */
+        .form-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 32px 40px;
+        }
+
+        .form-container h2 {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            margin: 0 0 28px 0;
+            color: #111827;
+        }
+
+        /* --- Grup Form (Label + Input) --- */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        /* Styling untuk Input & Textarea */
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D1D5DB; /* Border abu-abu */
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box; /* Penting! */
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3B82F6; /* Border biru saat fokus */
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: #9CA3AF;
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* --- Box Upload File --- */
+        .file-upload-box {
+            border: 2px dashed #D1D5DB;
+            border-radius: 12px;
+            background-color: #fcfcfd;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .file-upload-box:hover {
+            border-color: #3B82F6; /* Biru */
+            background-color: #f7f9ff;
+        }
+        
+        .file-upload-box svg {
+            width: 48px;
+            height: 48px;
+            color: #6B7281;
+            margin-bottom: 12px;
+        }
+        
+        .file-upload-box strong {
+            display: block;
+            font-weight: 600;
+            color: #111827;
+            font-size: 1rem;
+        }
+        
+        .file-upload-box p {
+            font-size: 0.875rem; /* 14px */
+            color: #6B7281;
+            margin: 4px 0 0 0;
+        }
+        
+        /* Input file asli kita sembunyikan */
+        .file-upload-input {
+            display: none;
+        }
+
+        /* --- Tombol Aksi Form --- */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB; /* Garis pemisah */
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        /* Tombol Primary (Abu-abu) */
+        .btn-primary {
+            background-color: #6B7281; /* Abu-abu tua */
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background-color: #4B5563;
+        }
+        .btn-primary svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Tombol Secondary (Batal) */
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #374151;
+            border: 1px solid #D1D5DB;
+        }
+        .btn-secondary:hover {
+            background-color: #F3F4F6;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header class="page-header">
+            <a href="#" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali
+            </a>
+            <h1>Upload Materi Baru</h1>
+            <p>Tambahkan materi pembelajaran untuk kelas Anda</p>
+        </header>
+
+        <main class="form-container">
+            <form action="#" method="POST">
+                <h2>Informasi Materi</h2>
+                
+                <div class="form-group">
+                    <label for="judul">Judul Materi</label>
+                    <input type="text" id="judul" name="judul" class="form-input" placeholder="Contoh: Pengenalan Trigonometri">
+                </div>
+                
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi</label>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" class="form-textarea" placeholder="Jelaskan isi materi..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload File</label>
+                    <label for="file-upload" class="file-upload-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <strong>Klik untuk upload file</strong>
+                        <p>PDF, PPT, DOC, Video (Max: 50MB)</p>
+                    </label>
+                    <input type="file" id="file-upload" name="file-upload" class="file-upload-input">
+                </div>
+                
+                <div class="form-group">
+                    <label for="link">Link Eksternal (Opsional)</label>
+                    <input type="text" id="link" name="link" class="form-input" placeholder="https://...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary">Batal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        Upload Materi
+                    </button>
+                </div>
+
+            </form>
+        </main>
+
+    </div> </body>
+</html>
