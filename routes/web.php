@@ -86,6 +86,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/kelas/{teaching}/materi/{material}', [KelasController::class, 'materiDestroy'])->name('kelas.materi.destroy');
         Route::get('/kelas/{teaching}/materi/{material}/unduh', [KelasController::class, 'materiDownload'])->name('kelas.materi.download');
         Route::get('/kelas/{teaching}/materi/{material}/view', [KelasController::class, 'materiView'])->name('kelas.materi.view');
+        Route::get('/kelas/{teaching}/tugas/buat', [KelasController::class, 'tugasCreate'])->name('kelas.tugas.create');
+        Route::post('/kelas/{teaching}/tugas', [KelasController::class, 'tugasStore'])->name('kelas.tugas.store');
+        Route::get('/kelas/{teaching}/tugas/{assignment}/edit', [KelasController::class, 'tugasEdit'])->name('kelas.tugas.edit');
+        Route::put('/kelas/{teaching}/tugas/{assignment}', [KelasController::class, 'tugasUpdate'])->name('kelas.tugas.update');
+        Route::delete('/kelas/{teaching}/tugas/{assignment}', [KelasController::class, 'tugasDestroy'])->name('kelas.tugas.destroy');
+        Route::get('/kelas/{teaching}/tugas/{assignment}/nilai', [KelasController::class, 'tugasNilai'])->name('kelas.tugas.nilai');
+        Route::get('/kelas/{teaching}/tugas/{assignment}/submissions/{submission}/unduh', [KelasController::class, 'submissionDownload'])->name('kelas.tugas.submissions.download');
+        Route::post('/kelas/{teaching}/tugas/{assignment}/submissions/{submission}/nilai', [KelasController::class, 'submissionGradeUpdate'])->name('kelas.tugas.submissions.update_grade');
         // Tambahkan rute guru lainnya di sini...
     });
 

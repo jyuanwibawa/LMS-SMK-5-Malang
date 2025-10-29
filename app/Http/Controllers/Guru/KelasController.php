@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Models\Teaching;
+use App\Models\Assignment;
 use App\Models\Material;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,7 +31,7 @@ class KelasController extends Controller
         // Authorize: owner or admin
         abort_unless($this->canAccess($teaching), 403);
 
-        $teaching->load(['course', 'schoolClass.enrollments', 'materials', 'assignments']);
+        $teaching->load(['course', 'schoolClass.enrollments', 'materials', 'assignments.submissions']);
 
         $title = $teaching->course->name . ' - ' . $teaching->schoolClass->name;
         $subtitle = $teaching->schoolClass->enrollments->count() . ' siswa terdaftar';
@@ -210,6 +212,139 @@ class KelasController extends Controller
         }
 
         return back()->withErrors(['file' => 'File tidak ditemukan.']);
+    }
+
+    public function tugasCreate(Teaching $teaching)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        $teaching->load(['course', 'schoolClass']);
+        return view('guru.kelas.Tugas.buat_tugas', compact('teaching'));
+    }
+
+    public function tugasStore(Teaching $teaching, Request $request)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+
+        $validated = $request->validate([
+            'title' => ['required','string','max:255'],
+            'description' => ['nullable','string'],
+            'start_time' => ['nullable','date'],
+            'end_time' => ['nullable','date','after_or_equal:start_time'],
+        ]);
+
+        Assignment::create([
+            'teaching_id' => $teaching->id,
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'type' => 'tugas',
+            'start_time' => $validated['start_time'] ?? null,
+            'end_time' => $validated['end_time'] ?? null,
+        ]);
+
+        return redirect()->route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas'])
+            ->with('status', 'Tugas/Kuis berhasil dibuat');
+    }
+
+    public function tugasEdit(Teaching $teaching, Assignment $assignment)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        abort_unless($assignment->teaching_id === $teaching->id, 404);
+        $teaching->load(['course', 'schoolClass']);
+        return view('guru.kelas.Tugas.edit', compact('teaching', 'assignment'));
+    }
+
+    public function tugasUpdate(Teaching $teaching, Assignment $assignment, Request $request)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        abort_unless($assignment->teaching_id === $teaching->id, 404);
+
+        $validated = $request->validate([
+            'title' => ['required','string','max:255'],
+            'description' => ['nullable','string'],
+            'start_time' => ['nullable','date'],
+            'end_time' => ['nullable','date','after_or_equal:start_time'],
+        ]);
+
+        $assignment->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'start_time' => $validated['start_time'] ?? null,
+            'end_time' => $validated['end_time'] ?? null,
+        ]);
+
+        return redirect()->route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas'])
+            ->with('status', 'Tugas berhasil diperbarui');
+    }
+
+    public function tugasDestroy(Teaching $teaching, Assignment $assignment)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        abort_unless($assignment->teaching_id === $teaching->id, 404);
+
+        $assignment->delete();
+        return redirect()->route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas'])
+            ->with('status', 'Tugas berhasil dihapus');
+    }
+
+    public function tugasNilai(Teaching $teaching, Assignment $assignment, Request $request)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        abort_unless($assignment->teaching_id === $teaching->id, 404);
+
+        $teaching->load(['course', 'schoolClass']);
+        $assignment->load(['submissions.user']);
+
+        $submissionId = $request->query('submission');
+        $currentSubmission = null;
+        if ($submissionId) {
+            $currentSubmission = $assignment->submissions->firstWhere('id', (int) $submissionId);
+        }
+        if (!$currentSubmission) {
+            $currentSubmission = $assignment->submissions->sortBy('submitted_at')->first();
+        }
+
+        return view('guru.kelas.Tugas.nilai_tugas', [
+            'teaching' => $teaching,
+            'assignment' => $assignment,
+            'currentSubmission' => $currentSubmission,
+        ]);
+    }
+
+    public function submissionDownload(Teaching $teaching, Assignment $assignment, Submission $submission)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        abort_unless($assignment->teaching_id === $teaching->id, 404);
+        abort_unless($submission->assignment_id === $assignment->id, 404);
+
+        if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+            $filename = basename($submission->file_path);
+            return Storage::disk('public')->download($submission->file_path, $filename);
+        }
+
+        return back()->withErrors(['file' => 'File tidak ditemukan.']);
+    }
+
+    public function submissionGradeUpdate(Teaching $teaching, Assignment $assignment, Submission $submission, Request $request)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        abort_unless($assignment->teaching_id === $teaching->id, 404);
+        abort_unless($submission->assignment_id === $assignment->id, 404);
+
+        $data = $request->validate([
+            'nilai' => ['nullable','numeric','min:0','max:100'],
+            'feedback' => ['nullable','string'],
+        ]);
+
+        $submission->update([
+            'grade' => $data['nilai'] ?? null,
+            'feedback' => $data['feedback'] ?? null,
+        ]);
+
+        return redirect()->route('guru.kelas.tugas.nilai', [
+            'teaching' => $teaching,
+            'assignment' => $assignment,
+            'submission' => $submission->id,
+        ])->with('status', 'Nilai tersimpan');
     }
 
     public function materiView(Teaching $teaching, Material $material)

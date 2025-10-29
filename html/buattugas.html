@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Tugas Baru</title>
+
+    <style>
+        /* --- Pengaturan Global --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #f4f7f6; /* Latar belakang abu-abu muda */
+            margin: 0;
+            padding: 24px;
+            color: #333;
+        }
+
+        /* --- Layout Utama --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto; /* Pusatkan container */
+        }
+
+        /* --- Header --- */
+        .page-header {
+            margin-bottom: 16px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
+        /* --- Kartu Form --- */
+        .task-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Bayangan halus */
+        }
+
+        /* --- Elemen Form --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px; /* Jarak antara label dan input */
+        }
+
+        /* Penataan untuk semua input dan textarea */
+        input[type="text"],
+        input[type="datetime-local"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dcdcdc;
+            border-radius: 6px;
+            box-sizing: border-box; /* Penting agar padding tidak merusak lebar */
+            font-size: 14px;
+            background-color: #fafafa; /* Latar input sedikit abu-abu */
+        }
+
+        /* Beri tinggi minimal untuk textarea instruksi */
+        textarea {
+            min-height: 100px;
+            resize: vertical; /* Izinkan user mengubah tinggi textarea */
+        }
+
+        /* --- Baris Form (Deadline & Nilai) --- */
+        .form-row {
+            display: flex;
+            gap: 20px; /* Jarak antar kolom */
+        }
+
+        .form-group-half {
+            flex: 1; /* Bagi ruang secara merata */
+            min-width: 0; /* Perbaikan untuk flexbox */
+        }
+
+        /* --- Tombol Aksi --- */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98); /* Efek klik */
+        }
+
+        /* Tombol Primary (Buat Tugas) */
+        .btn-primary {
+            background-color: #555; /* Abu-abu tua */
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #333;
+        }
+
+        /* Tombol Secondary (Batal) */
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #555;
+            border: 1px solid #dcdcdc;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* --- Penyesuaian untuk Layar Kecil (Responsif) --- */
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column; /* Susun vertikal di layar kecil */
+                gap: 0; /* Hapus jarak, karena form-group sudah punya margin-bottom */
+            }
+
+            .form-actions {
+                flex-direction: column; /* Susun tombol secara vertikal */
+            }
+
+            .btn {
+                width: 100%; /* Buat tombol memenuhi lebar */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="page-header">
+        <a href="#" class="back-link">
+            &larr; Kembali
+        </a>
+    </header>
+
+    <main class="container">
+        <h1>Buat Tugas Baru</h1>
+
+        <div class="task-card">
+            <form>
+                <h2>Informasi Tugas</h2>
+
+                <div class="form-group">
+                    <label for="judul">Judul Tugas</label>
+                    <input type="text" id="judul" name="judul" placeholder="Masukkan judul tugas...">
+                </div>
+
+                <div class="form-group">
+                    <label for="instruksi">Instruksi</label>
+                    <textarea id="instruksi" name="instruksi" rows="5" placeholder="Masukkan instruksi tugas..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="deadline">Deadline</label>
+                        <input type="date" id="deadline" name="deadline">
+                    </div>
+                    
+                    <div class="form-group form-group-half">
+                        <label for="nilai">Nilai Maksimal</label>
+                        <input type="number" id="nilai" name="nilai" value="100">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Buat Tugas</button>
+                    <button type="button" class="btn btn-secondary">Batal</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

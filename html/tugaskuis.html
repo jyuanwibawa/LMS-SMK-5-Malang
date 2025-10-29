@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tampilan Tugas dan Kuis</title>
+    
+    <style>
+    
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa; /* Latar belakang abu-abu sangat muda */
+            margin: 0;
+            padding: 20px;
+            color: #212529;
+        }
+
+        /* Kontainer Utama */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        /* Bagian (Tugas & Kuis) */
+        .course-section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Tombol (Button) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Jarak antara ikon dan teks */
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Tombol Hitam (Primary) */
+        .btn-primary {
+            background-color: #111;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: #333;
+        }
+
+        /* Tombol Putih (Secondary) */
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #111;
+            border: 1px solid #dee2e6; /* Border abu-abu muda */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Penataan Ikon di dalam Tombol */
+        .btn .icon-plus {
+            font-size: 20px;
+            line-height: 1; /* Menyamakan tinggi */
+            font-weight: 400; /* Plus-nya tidak terlalu tebal */
+        }
+
+        .btn .icon-svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Kartu (Card) */
+        .card-list {
+            display: grid;
+            gap: 16px; /* Jarak antar kartu */
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e9ecef; /* Border sangat tipis */
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03); /* Bayangan halus */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-content h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        /* Meta Data (Deadline, Terkumpul, dll.) */
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap; /* Agar rapi di layar kecil */
+            gap: 4px 0;
+            font-size: 14px;
+            color: #6c757d; /* Teks abu-abu */
+        }
+
+        /* Membuat pemisah titik (•) antar item meta */
+        .card-meta span:not(:last-child)::after {
+            content: "•";
+            margin: 0 8px;
+            color: #adb5bd; /* Warna titik pemisah */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <section class="course-section">
+            <header class="section-header">
+                <h2>Tugas</h2>
+                <button class="btn btn-primary">
+                    <span class="icon-plus">+</span>
+                    Buat Tugas
+                </button>
+            </header>
+
+            <div class="card-list">
+                <article class="card">
+                    <div class="card-content">
+                        <h3>Latihan Soal Trigonometri</h3>
+                        <div class="card-meta">
+                            <span>Deadline: 15/10/2025</span>
+                            <span>25/28 terkumpul</span>
+                            <span>20 dinilai</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary">Nilai Tugas</button>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-content">
+                        <h3>Project Aplikasi Trigonometri</h3>
+                        <div class="card-meta">
+                            <span>Deadline: 20/10/2025</span>
+                            <span>15/28 terkumpul</span>
+                            <span>0 dinilai</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary">Nilai Tugas</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="course-section">
+            <header class="section-header">
+                <h2>Kuis</h2>
+                <button class="btn btn-primary">
+                    <span class="icon-plus">+</span>
+                    Buat Kuis
+                </button>
+            </header>
+
+            <div class="card-list">
+                <article class="card">
+                    <div class="card-content">
+                        <h3>Kuis Tengah Semester</h3>
+                        <div class="card-meta">
+                            <span>13/10/2025</span>
+                            <span>28 peserta</span>
+                            <span>Rata-rata: 85</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary">
+                            <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            Lihat Hasil
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

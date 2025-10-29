@@ -63,15 +63,22 @@
                 <p class="subtitle">{{ $subtitle ?? '0 siswa terdaftar' }}</p>
             </header>
 
+            @php($activeTab = request('tab', 'materi'))
             <nav class="tabs">
-              <a href="{{ route('guru.kelas.show', $teaching) }}" class="active">Materi</a>
-                <a href="#">Tugas</a>
-                <a href="#">Nilai</a>
-                <a href="#">Forum</a>
-                <a href="#">Peserta</a>
+              <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'materi']) }}" class="{{ $activeTab === 'materi' ? 'active' : '' }}">Materi</a>
+              <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas']) }}" class="{{ $activeTab === 'tugas' ? 'active' : '' }}">Tugas/Kuis</a>
+              <a href="#">Nilai</a>
+              <a href="#">Forum</a>
+              <a href="#">Peserta</a>
             </nav>
 
-            @include('guru.kelas.Materi.index')
+            <div id="tab-materi" style="display: {{ $activeTab === 'materi' ? 'block' : 'none' }};">
+              @include('guru.kelas.Materi.index')
+            </div>
+
+            <div id="tab-tugas" style="display: {{ $activeTab === 'tugas' ? 'block' : 'none' }};">
+              @include('guru.kelas.Tugas.index')
+            </div>
           
         </div>
     </main>

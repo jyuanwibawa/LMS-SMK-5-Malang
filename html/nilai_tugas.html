@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penilaian Tugas</title>
+    
+    <style>
+        /* --- Pengaturan Global & Font --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb; /* Latar belakang abu-abu sangat muda */
+            margin: 0;
+            padding: 32px;
+            color: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* --- Kontainer Utama --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Header Halaman --- */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        .page-header .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        /* --- Layout Utama Penilaian --- */
+        .assessment-layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+        }
+
+        /* --- Kolom Kiri (Daftar Siswa) --- */
+        .student-list-column {
+            flex: 1; /* Kolom ini akan mengambil 1 bagian */
+            min-width: 300px; /* Lebar minimum */
+            max-width: 350px; /* Lebar maksimum */
+        }
+
+        /* --- Kolom Kanan (Detail Penilaian) --- */
+        .grading-column {
+            flex: 2; /* Kolom ini akan mengambil 2 bagian, membuatnya lebih lebar */
+        }
+
+        /* --- Styling Kartu (Umum) --- */
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+        }
+
+        /* --- Daftar Siswa (Kolom Kiri) --- */
+        .student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .student-item {
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            
+            /* Gunakan grid untuk menata item siswa */
+            display: grid;
+            grid-template-columns: 1fr auto; /* Kolom info dan kolom badge */
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-item:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Status Aktif/Terpilih */
+        .student-item.active {
+            background-color: #f3f4f6; /* Abu-abu lebih gelap */
+            border-color: #d1d5db;
+        }
+
+        .student-info strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .student-info .nisn,
+        .student-info .submission-time {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* --- Badge (Status & Nilai) --- */
+        .badge {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 999px; /* Bentuk pil */
+            white-space: nowrap;
+        }
+
+        .badge.status-unscored {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .badge.score {
+            background-color: #dcfce7; /* Hijau muda */
+            color: #166534; /* Hijau tua */
+            font-weight: 600;
+        }
+
+        /* --- Detail Penilaian (Kolom Kanan) --- */
+        .grading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .grading-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .grading-header .nisn {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .badge.status-scored {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Kotak File Pengumpulan */
+        .file-submission-box {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .file-info .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin: 0 0 4px 0;
+        }
+
+        .file-info .submission-time {
+            font-size: 12px;
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        /* Tombol Aksi File */
+        .file-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-icon {
+            background-color: #fff;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-icon .icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        /* --- Form Penilaian --- */
+        .grading-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .grading-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .grading-form input[type="number"],
+        .grading-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #fdfdfd;
+        }
+        
+        .grading-form input[type="number"]:focus,
+        .grading-form textarea:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .grading-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Tombol Simpan */
+        .btn-primary {
+            width: 100%;
+            background-color: #111827; /* Hitam */
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #374151;
+        }
+
+        /* --- Penyesuaian Responsif --- */
+        @media (max-width: 900px) {
+            .assessment-layout {
+                flex-direction: column;
+            }
+            
+            .student-list-column {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        
+        <header class="page-header">
+            <h1>Penilaian Tugas: Latihan Soal Trigonometri</h1>
+            <p class="subtitle">Nilai maksimal: 100</p>
+        </header>
+
+        <div class="assessment-layout">
+
+            <aside class="student-list-column card">
+                <h2>Daftar Pengumpulan</h2>
+                
+                <ul class="student-list">
+                    <li class="student-item active">
+                        <div class="student-info">
+                            <strong>Ahmad Pratama</strong>
+                            <span class="nisn">0012345678</span>
+                            <span class="submission-time">12/10/2025, 14.30.00</span>
+                        </div>
+                        <span class="badge score">92</span>
+                    </li>
+                    
+                    <li class="student-item">
+                        <div class="student-info">
+                            <strong>Budi Santoso</strong>
+                            <span class="nisn">0012345679</span>
+                            <span class="submission-time">12/10/2025, 16.45.00</span>
+                        </div>
+                        <span class="badge status-unscored">Belum Dinilai</span>
+                    </li>
+
+                    <li class="student-item">
+                        <div class="student-info">
+                            <strong>Citra Dewi</strong>
+                            <span class="nisn">0012345680</span>
+                            <span class="submission-time">13/10/2025, 09.15.00</span>
+                        </div>
+                        <span class="badge status-unscored">Belum Dinilai</span>
+                    </li>
+                </ul>
+            </aside>
+
+            <section class="grading-column card">
+                
+                <div class="grading-header">
+                    <div>
+                        <h3>Ahmad Pratama</h3>
+                        <span class="nisn">NISN: 0012345678</span>
+                    </div>
+                    <span class="badge status-scored">Sudah Dinilai</span>
+                </div>
+
+                <div class="file-submission-box">
+                    <div class="file-info">
+                        <p class="file-name">ahmad_tugas1.pdf</p>
+                        <span class="submission-time">Dikumpulkan: 12/10/2025, 14.30.00</span>
+                    </div>
+                    <div class="file-actions">
+                        <button type="button" class="btn-icon">
+                            <span class="icon">&#8681;</span> Unduh
+                        </button>
+                    </div>
+                </div>
+
+                <form class="grading-form">
+                    <div class="form-group">
+                        <label for="nilai">Nilai</label>
+                        <input type="number" id="nilai" name="nilai" value="92">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedback">Feedback</label>
+                        <textarea id="feedback" name="feedback" rows="4">Bagus! Tingkatkan ketelitian</textarea>
+                    }
+                    
+                    <button type="submit" class="btn-primary">
+                        <span class="icon">&#128427;</span> Simpan Nilai
+                    </button>
+                </form>
+
+            </section>
+
+        </div> </main>
+
+</body>
+</html>
