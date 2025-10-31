@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $adminRole = Role::where('name', 'admin')->first();
+        $guruRole = Role::where('name', 'guru')->first();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::updateOrCreate(
+            [
+                'email' => 'adminsmk5malang@gmail.com',
+            ],
+            [
+                'name' => 'Admin SMK 5 Malang',
+                'identity_number' => '123456',
+                'jenis_kelamin' => 'Laki-Laki',
+                'password' => Hash::make('adminsmk5malang'),
+                'role_id' => $adminRole?->id,
+            ]
+        );
+
+        User::updateOrCreate(
+            [
+                'email' => 'munifguru@gmail.com',
+            ],
+            [
+                'name' => 'Munif Hamdani',
+                'identity_number' => '1234567890',
+                'jenis_kelamin' => 'Laki-Laki',
+                'password' => Hash::make('munifgurusmk5'),
+                'role_id' => $guruRole?->id,
+            ]
+        );
     }
 }
