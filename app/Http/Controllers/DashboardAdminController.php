@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\SchoolClass;
 use App\Models\Course;
 use App\Models\Teaching;
+use App\Models\ActivityLog;
 
 class DashboardAdminController extends Controller
 {
@@ -26,10 +27,101 @@ class DashboardAdminController extends Controller
             $query->where('name', 'siswa');
         })->count();
 
+        // Kelas aktif: jumlah teaching yang terdaftar (kombinasi guru-mapel-kelas)
+        $activeClasses = Teaching::count();
+
+        // Pengguna baru bulan ini
+        $newUsersThisMonth = User::whereBetween('created_at', [
+            now()->startOfMonth(),
+            now()->endOfMonth(),
+        ])->count();
+
+        // ===== Data untuk grafik =====
+        // 1. Aktivitas mingguan (menggunakan ActivityLog 7 hari terakhir)
+        $startWeek = now()->copy()->subDays(6)->startOfDay();
+        $endWeek = now()->copy()->endOfDay();
+
+        $logs = ActivityLog::with('user.role')
+            ->whereBetween('timestamp', [$startWeek, $endWeek])
+            ->get();
+
+        $dayLabels = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+        $weeklyGuruCounts = [];
+        $weeklySiswaCounts = [];
+
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startWeek->copy()->addDays($i)->format('Y-m-d');
+            $logsForDay = $logs->filter(function($log) use ($date) {
+                return optional($log->timestamp)->format('Y-m-d') === $date;
+            });
+            $weeklyGuruCounts[$i] = $logsForDay->filter(function($log){
+                return optional(optional($log->user)->role)->name === 'guru';
+            })->count();
+            $weeklySiswaCounts[$i] = $logsForDay->filter(function($log){
+                return optional(optional($log->user)->role)->name === 'siswa';
+            })->count();
+        }
+
+        // Ambil nilai maksimum dari semua titik (guru+siswa), minimal 1 agar tidak bagi 0
+        $maxWeekly = max(array_merge($weeklyGuruCounts, $weeklySiswaCounts, [1]));
+        $xMin = 40; $xMax = 270; $yMin = 30; $yMax = 190; $height = $yMax - $yMin; $step = ($xMax - $xMin) / 6;
+        $weeklyGuruPoints = [];
+        $weeklySiswaPoints = [];
+        for ($i = 0; $i < 7; $i++) {
+            $x = $xMin + $i * $step;
+            $yGuru = $yMax - ($weeklyGuruCounts[$i] / $maxWeekly) * $height;
+            $ySiswa = $yMax - ($weeklySiswaCounts[$i] / $maxWeekly) * $height;
+            $weeklyGuruPoints[] = round($x,1).','.round($yGuru,1);
+            $weeklySiswaPoints[] = round($x,1).','.round($ySiswa,1);
+        }
+        $weeklyGuruPointsStr = implode(' ', $weeklyGuruPoints);
+        $weeklySiswaPointsStr = implode(' ', $weeklySiswaPoints);
+
+        // 2. Registrasi bulanan (6 bulan terakhir)
+        $monthLabels = [];
+        $monthlyGuruCounts = [];
+        $monthlySiswaCounts = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = now()->copy()->subMonths($i)->startOfMonth();
+            $monthEnd = $monthStart->copy()->endOfMonth();
+            $monthLabels[] = $monthStart->format('M');
+
+            $monthlyGuruCounts[] = User::whereBetween('created_at', [$monthStart, $monthEnd])
+                ->whereHas('role', function($q){ $q->where('name','guru'); })
+                ->count();
+
+            $monthlySiswaCounts[] = User::whereBetween('created_at', [$monthStart, $monthEnd])
+                ->whereHas('role', function($q){ $q->where('name','siswa'); })
+                ->count();
+        }
+
+        // Maksimum registrasi bulanan untuk skala grafik, minimal 1
+        $maxMonthly = max(array_merge($monthlyGuruCounts, $monthlySiswaCounts, [1]));
+
+        // Aktivitas terbaru untuk panel "Aktivitas Terkini"
+        $recentActivities = ActivityLog::with('user.role')
+            ->orderByDesc('timestamp')
+            ->limit(5)
+            ->get();
+
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalGuru',
-            'totalSiswa'
+            'totalSiswa',
+            'activeClasses',
+            'newUsersThisMonth',
+            'dayLabels',
+            'weeklyGuruCounts',
+            'weeklySiswaCounts',
+            'weeklyGuruPointsStr',
+            'weeklySiswaPointsStr',
+            'monthLabels',
+            'monthlyGuruCounts',
+            'monthlySiswaCounts',
+            'maxWeekly',
+            'maxMonthly',
+            'recentActivities'
         ));
     }
 
@@ -155,7 +247,12 @@ class DashboardAdminController extends Controller
 
     public function logs()
     {
-        return view('admin.logs.index');
+        $logs = ActivityLog::with('user')
+            ->orderByDesc('timestamp')
+            ->limit(200)
+            ->get();
+
+        return view('admin.logs.index', compact('logs'));
     }
 
     public function manageClass(SchoolClass $class)

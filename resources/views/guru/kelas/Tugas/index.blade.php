@@ -18,10 +18,10 @@
 </style>
 
 @php(
-    $tugas = $teaching->assignments->filter(function($a){ return strtolower($a->type ?? '') !== 'quiz'; })
+    $tugas = $teaching->assignments->filter(function($a){ return strtoupper($a->type ?? '') === 'TUGAS'; })
 )
 @php(
-    $kuis = $teaching->assignments->filter(function($a){ return strtolower($a->type ?? '') === 'quiz'; })
+    $kuis = $teaching->assignments->filter(function($a){ return strtoupper($a->type ?? '') === 'KUIS'; })
 )
 
 <div class="tugaskuis-container">
@@ -65,10 +65,10 @@
     <section class="tugaskuis-section">
         <header class="tugaskuis-header">
             <h2>Kuis</h2>
-            <button class="tugaskuis-btn tugaskuis-btn-primary">
+            <a href="{{ route('guru.kelas.kuis.create', $teaching) }}" class="tugaskuis-btn tugaskuis-btn-primary" style="text-decoration:none;">
                 <span class="icon-plus">+</span>
                 Buat Kuis
-            </button>
+            </a>
         </header>
 
         @if($kuis->isEmpty())

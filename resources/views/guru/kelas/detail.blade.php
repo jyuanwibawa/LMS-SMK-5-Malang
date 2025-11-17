@@ -65,21 +65,28 @@
 
             @php($activeTab = request('tab', 'materi'))
             <nav class="tabs">
-              <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'materi']) }}" class="{{ $activeTab === 'materi' ? 'active' : '' }}">Materi</a>
-              <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas']) }}" class="{{ $activeTab === 'tugas' ? 'active' : '' }}">Tugas/Kuis</a>
-              <a href="#">Nilai</a>
-              <a href="#">Forum</a>
-              <a href="#">Peserta</a>
+                <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'materi']) }}" class="{{ $activeTab === 'materi' ? 'active' : '' }}">Materi</a>
+                <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas']) }}" class="{{ $activeTab === 'tugas' ? 'active' : '' }}">Tugas/Kuis</a>
+                <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'nilai']) }}" class="{{ $activeTab === 'nilai' ? 'active' : '' }}">Nilai</a>
+                <a href="#">Forum</a>
+                <a href="{{ route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'peserta']) }}" class="{{ $activeTab === 'peserta' ? 'active' : '' }}">Peserta</a>
             </nav>
 
             <div id="tab-materi" style="display: {{ $activeTab === 'materi' ? 'block' : 'none' }};">
-              @include('guru.kelas.Materi.index')
+                @include('guru.kelas.Materi.index')
             </div>
 
             <div id="tab-tugas" style="display: {{ $activeTab === 'tugas' ? 'block' : 'none' }};">
-              @include('guru.kelas.Tugas.index')
+                @include('guru.kelas.Tugas.index')
             </div>
-          
+
+            <div id="tab-nilai" style="display: {{ $activeTab === 'nilai' ? 'block' : 'none' }};">
+                @include('guru.kelas.Nilai.rekap')
+            </div>
+
+            <div id="tab-peserta" style="display: {{ $activeTab === 'peserta' ? 'block' : 'none' }};">
+                @include('guru.kelas.Peserta.index')
+            </div>
         </div>
     </main>
 </body>

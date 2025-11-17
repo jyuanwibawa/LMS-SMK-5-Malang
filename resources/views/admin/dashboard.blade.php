@@ -161,84 +161,113 @@
 
         /* --- Konten Utama --- */
         .main-content {
-            padding: 32px;
+            padding: 32px 40px;
             margin-left: 300px;
-            /* Jarak seukuran lebar sidebar */
         }
 
         .main-header h2 {
             font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
 
         .main-header p {
             color: var(--secondary-text-color);
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         /* --- Kartu Statistik --- */
         .stats-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
         }
 
         .stat-card {
-            background-color: var(--card-bg-color);
-            padding: 24px;
-            border-radius: 12px;
+            background-color: #FFFFFF;
+            padding: 18px 18px 16px;
+            border-radius: 18px;
             border: 1px solid var(--border-color);
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .stat-card .icon-container {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+        .stat-header {
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .icon-container {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-right: 16px;
+            font-size: 22px;
             flex-shrink: 0;
         }
 
-        .stat-card:nth-child(1) .icon-container {
-            background-color: #E0E7FF;
-            color: #4338CA;
-        }
+        .icon-blue { background:#EEF2FF; color:#2563EB; }
+        .icon-green { background:#ECFDF5; color:#16A34A; }
+        .icon-purple { background:#F3E8FF; color:#7C3AED; }
+        .icon-orange { background:#FFFBEB; color:#EA580C; }
 
-        /* Total Pengguna */
-        .stat-card:nth-child(2) .icon-container {
-            background-color: #FEF3C7;
-            color: #D97706;
-        }
-
-        /* Jumlah Guru */
-        .stat-card:nth-child(3) .icon-container {
-            background-color: #D1FAE5;
-            color: #059669;
-        }
-
-        /* Jumlah Siswa */
-        .stat-card:nth-child(4) .icon-container {
-            background-color: #F3E8FF;
-            color: #8B5CF6;
-        }
-
-        /* Kelas Aktif */
-        .stat-card .stat-info p {
+        .stat-title {
             font-size: 14px;
-            color: var(--secondary-text-color);
-            margin-bottom: 4px;
+            color: #4B5563;
+            font-weight:600;
         }
 
-        .stat-card .stat-info h3 {
-            font-size: 24px;
-            font-weight: 700;
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color:#111827;
+        }
+
+        .stat-subtext {
+            font-size: 13px;
+            color:#6B7280;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 640px) {
+            .stats-cards { grid-template-columns: 1fr; }
+        }
+
+        /* Kartu grafik bawah */
+        .charts-grid {
+            margin-top: 28px;
+            display:grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap:18px;
+        }
+        .chart-card {
+            background:#fff;
+            border-radius:18px;
+            border:1px solid var(--border-color);
+            padding:18px 20px 20px;
+        }
+        .chart-card h3 {
+            font-size:16px;
+            font-weight:700;
+            margin-bottom:4px;
+        }
+        .chart-card p {
+            font-size:13px;
+            color:#6B7280;
+            margin-bottom:10px;
+        }
+        .chart-wrapper { width:100%; height:220px; }
+        .chart-svg { width:100%; height:100%; }
+
+        @media (max-width: 1024px) {
+            .charts-grid { grid-template-columns:1fr; }
         }
 
         /* ... CSS lainnya dari layout Anda ... */
@@ -252,47 +281,195 @@
 
     <main class="main-content">
         <header class="main-header">
-            {{-- Mengambil nama admin yang sedang login --}}
-            <h2>Selamat Datang, {{ Auth::user()->name }}! 👋</h2>
-            <p>Berikut adalah ringkasan sistem LMS hari ini</p>
+            <h2>Dashboard Admin</h2>
+            <p>Selamat datang kembali, {{ Auth::user()->name }}! Berikut ringkasan sistem LMS.</p>
         </header>
 
         <section class="stats-cards">
             <div class="stat-card">
-                <div class="icon-container"><i class='bx bxs-group'></i></div>
-                <div class="stat-info">
-                    <p>Total Pengguna</p>
-                    {{-- Tampilkan data dari controller --}}
-                    <h3>{{ $totalUsers }}</h3>
+                <div class="stat-header">
+                    <div class="icon-container icon-blue"><i class='bx bx-user'></i></div>
+                    <div class="stat-title">Total Siswa</div>
+                </div>
+                <div class="stat-value">{{ $totalSiswa }}</div>
+                <div class="stat-subtext">&nbsp;</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-container icon-green"><i class='bx bx-chalkboard'></i></div>
+                    <div class="stat-title">Total Guru</div>
+                </div>
+                <div class="stat-value">{{ $totalGuru }}</div>
+                <div class="stat-subtext">&nbsp;</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-container icon-purple"><i class='bx bx-book-open'></i></div>
+                    <div class="stat-title">Kelas Aktif</div>
+                </div>
+                <div class="stat-value">{{ $activeClasses }}</div>
+                <div class="stat-subtext">&nbsp;</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="icon-container icon-orange"><i class='bx bx-user-plus'></i></div>
+                    <div class="stat-title">Pengguna Baru</div>
+                </div>
+                <div class="stat-value">{{ $newUsersThisMonth }}</div>
+                <div class="stat-subtext">bulan ini</div>
+            </div>
+        </section>
+
+        <section class="charts-grid">
+            <div class="chart-card">
+                <h3>Aktivitas Pengguna Mingguan</h3>
+                <p>Login harian siswa dan guru dalam 7 hari terakhir</p>
+                <div class="chart-wrapper">
+                    <svg class="chart-svg" viewBox="0 0 300 220" preserveAspectRatio="none">
+                        <!-- grid -->
+                        <g stroke="#E5E7EB" stroke-width="1">
+                            <line x1="40" y1="30" x2="40" y2="190" />
+                            <line x1="40" y1="190" x2="270" y2="190" />
+                            <line x1="40" y1="70" x2="270" y2="70" stroke-dasharray="4 4" />
+                            <line x1="40" y1="110" x2="270" y2="110" stroke-dasharray="4 4" />
+                            <line x1="40" y1="150" x2="270" y2="150" stroke-dasharray="4 4" />
+                        </g>
+                        <!-- siswa line (hitam) -->
+                        <polyline fill="none" stroke="#111827" stroke-width="2.5"
+                            points="{{ $weeklySiswaPointsStr }}" />
+                        <!-- guru line (abu) -->
+                        <polyline fill="none" stroke="#9CA3AF" stroke-width="2"
+                            points="{{ $weeklyGuruPointsStr }}" />
+                        <!-- legend -->
+                        <circle cx="120" cy="205" r="4" fill="none" stroke="#9CA3AF" stroke-width="2" />
+                        <text x="130" y="208" font-size="11" fill="#4B5563">Guru</text>
+                        <line x1="185" y1="205" x2="197" y2="205" stroke="#111827" stroke-width="2.5" />
+                        <text x="202" y="208" font-size="11" fill="#111827">Siswa</text>
+                    </svg>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="icon-container"><i class='bx bxs-user-account'></i></div>
-                <div class="stat-info">
-                    <p>Jumlah Guru</p>
-                    {{-- Tampilkan data dari controller --}}
-                    <h3>{{ $totalGuru }}</h3>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-container"><i class='bx bxs-graduation'></i></div>
-                <div class="stat-info">
-                    <p>Jumlah Siswa</p>
-                    {{-- Tampilkan data dari controller --}}
-                    <h3>{{ $totalSiswa }}</h3>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-container"><i class='bx bx-archive'></i></div>
-                <div class="stat-info">
-                    <p>Kelas Aktif</p>
-                    {{-- Ganti 45 dengan variabel jika sudah ada, misal: $totalKelas --}}
-                    <h3>45</h3>
+
+            <div class="chart-card">
+                <h3>Registrasi Bulanan</h3>
+                <p>Pengguna baru yang terdaftar 6 bulan terakhir</p>
+                <div class="chart-wrapper">
+                    <svg class="chart-svg" viewBox="0 0 300 220" preserveAspectRatio="none">
+                        <!-- axis -->
+                        <g stroke="#E5E7EB" stroke-width="1">
+                            <line x1="40" y1="30" x2="40" y2="190" />
+                            <line x1="40" y1="190" x2="270" y2="190" />
+                        </g>
+                        @php
+                            $xStart = 55; $slot = 40; $siswaWidth = 14; $guruWidth = 10;
+                            $baseY = 190; $maxH = 110;
+                            $months = $monthLabels;
+                        @endphp
+                        <!-- bars siswa (hitam) -->
+                        <g fill="#111827">
+                            @foreach($monthlySiswaCounts as $i => $count)
+                                @php($h = $maxMonthly > 0 ? max(2, ($count / $maxMonthly) * $maxH) : 2)
+                                @php($x = $xStart + $i * $slot)
+                                <rect x="{{ $x }}" y="{{ $baseY - $h }}" width="{{ $siswaWidth }}" height="{{ $h }}" rx="3" />
+                            @endforeach
+                        </g>
+                        <!-- bars guru (abu) -->
+                        <g fill="#9CA3AF">
+                            @foreach($monthlyGuruCounts as $i => $count)
+                                @php($h = $maxMonthly > 0 ? max(2, ($count / $maxMonthly) * ($maxH * 0.4)) : 2)
+                                @php($x = $xStart - 13 + $i * $slot)
+                                <rect x="{{ $x }}" y="{{ $baseY - $h }}" width="{{ $guruWidth }}" height="{{ $h }}" rx="2" />
+                            @endforeach
+                        </g>
+                        <!-- month labels -->
+                        <g font-size="11" fill="#4B5563">
+                            @foreach($months as $i => $label)
+                                @php($x = $xStart - 3 + $i * $slot)
+                                <text x="{{ $x }}" y="205">{{ $label }}</text>
+                            @endforeach
+                        </g>
+                        <!-- legend -->
+                        <rect x="80" y="32" width="10" height="10" fill="#9CA3AF" rx="2" />
+                        <text x="94" y="40" font-size="11" fill="#4B5563">Guru</text>
+                        <rect x="150" y="32" width="10" height="10" fill="#111827" rx="2" />
+                        <text x="164" y="40" font-size="11" fill="#111827">Siswa</text>
+                    </svg>
                 </div>
             </div>
         </section>
-        {{-- Anda bisa menambahkan section lain yang relevan untuk admin di sini --}}
-        {{-- Contoh: Grafik pengguna baru, log aktivitas terakhir, dll. --}}
+
+        <section style="margin-top:28px; display:grid; grid-template-columns: 2.1fr 1fr; gap:18px; align-items:flex-start;">
+            <div style="background:#fff;border-radius:18px;border:1px solid #E5E7EB;padding:18px 20px;">
+                <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Akses Cepat</h3>
+                <p style="font-size:13px;color:#6B7280;margin-bottom:16px;">Shortcut ke fitur-fitur utama</p>
+
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">
+                    <a href="{{ route('admin.users.index') }}" style="text-decoration:none;color:inherit;">
+                        <div style="border:1px solid #E5E7EB;border-radius:14px;padding:14px 12px;height:100%;">
+                            <div style="width:40px;height:40px;border-radius:12px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><i class='bx bx-user-plus' style="font-size:20px;"></i></div>
+                            <div style="font-weight:700;margin-bottom:4px;">Tambah Pengguna</div>
+                            <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">Daftarkan guru atau siswa baru</div>
+                            <div style="font-size:13px;font-weight:600;">Akses →</div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('admin.academic.index') }}" style="text-decoration:none;color:inherit;">
+                        <div style="border:1px solid #E5E7EB;border-radius:14px;padding:14px 12px;height:100%;">
+                            <div style="width:40px;height:40px;border-radius:12px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><i class='bx bx-book-open' style="font-size:20px;"></i></div>
+                            <div style="font-weight:700;margin-bottom:4px;">Kelola Kelas</div>
+                            <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">Atur kelas dan mata pelajaran</div>
+                            <div style="font-size:13px;font-weight:600;">Akses →</div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('admin.logs.index') }}" style="text-decoration:none;color:inherit;">
+                        <div style="border:1px solid #E5E7EB;border-radius:14px;padding:14px 12px;height:100%;">
+                            <div style="width:40px;height:40px;border-radius:12px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><i class='bx bx-line-chart' style="font-size:20px;"></i></div>
+                            <div style="font-weight:700;margin-bottom:4px;">Lihat Aktivitas</div>
+                            <div style="font-size:13px;color:#6B7280;margin-bottom:10px;">Monitor log sistem</div>
+                            <div style="font-size:13px;font-weight:600;">Akses →</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Aktivitas Terkini --}}
+            <aside style="background:#fff;border-radius:18px;border:1px solid #E5E7EB;padding:18px 20px;">
+                <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">Aktivitas Terkini</h3>
+                <p style="font-size:13px;color:#6B7280;margin-bottom:12px;">Update sistem real-time</p>
+
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    @forelse($recentActivities as $act)
+                        <div style="display:flex;gap:10px;">
+                            <div style="width:32px;height:32px;border-radius:999px;background:{{ optional(optional($act->user)->role)->name === 'guru' ? '#ECFDF5' : (optional(optional($act->user)->role)->name === 'admin' ? '#FEF3C7' : '#EEF2FF') }};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
+                                @if(optional(optional($act->user)->role)->name === 'guru')
+                                    <i class='bx bx-chalkboard' style="font-size:18px;"></i>
+                                @elseif(optional(optional($act->user)->role)->name === 'admin')
+                                    <i class='bx bx-shield-quarter' style="font-size:18px;"></i>
+                                @else
+                                    <i class='bx bx-user' style="font-size:18px;"></i>
+                                @endif
+                            </div>
+                            <div style="font-size:13px;">
+                                <div style="font-weight:700;color:#111827;">
+                                    {{ optional($act->user)->name ?? 'Pengguna' }}
+                                </div>
+                                <div style="color:#4B5563;margin-bottom:2px;">
+                                    {{ $act->description }}
+                                </div>
+                                <div style="color:#9CA3AF;font-size:12px;">
+                                    {{ optional($act->timestamp)->diffForHumans() }}
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div style="font-size:13px;color:#6B7280;">Belum ada aktivitas terbaru.</div>
+                    @endforelse
+                </div>
+            </aside>
+        </section>
 
     </main>
 </body>

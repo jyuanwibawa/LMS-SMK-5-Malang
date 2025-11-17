@@ -8,6 +8,7 @@ use App\Http\Controllers\Guru\KelasController;
 use App\Http\Controllers\DashboardSiswaController;
 use App\Http\Controllers\Admin\AcademicClassController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\GuruProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,17 +89,39 @@ Route::middleware('auth')->group(function () {
         Route::get('/kelas/{teaching}/materi/{material}/view', [KelasController::class, 'materiView'])->name('kelas.materi.view');
         Route::get('/kelas/{teaching}/tugas/buat', [KelasController::class, 'tugasCreate'])->name('kelas.tugas.create');
         Route::post('/kelas/{teaching}/tugas', [KelasController::class, 'tugasStore'])->name('kelas.tugas.store');
+        Route::get('/kelas/{teaching}/kuis/buat', [KelasController::class, 'kuisCreate'])->name('kelas.kuis.create');
+        Route::post('/kelas/{teaching}/kuis', [KelasController::class, 'kuisStore'])->name('kelas.kuis.store');
         Route::get('/kelas/{teaching}/tugas/{assignment}/edit', [KelasController::class, 'tugasEdit'])->name('kelas.tugas.edit');
         Route::put('/kelas/{teaching}/tugas/{assignment}', [KelasController::class, 'tugasUpdate'])->name('kelas.tugas.update');
         Route::delete('/kelas/{teaching}/tugas/{assignment}', [KelasController::class, 'tugasDestroy'])->name('kelas.tugas.destroy');
         Route::get('/kelas/{teaching}/tugas/{assignment}/nilai', [KelasController::class, 'tugasNilai'])->name('kelas.tugas.nilai');
         Route::get('/kelas/{teaching}/tugas/{assignment}/submissions/{submission}/unduh', [KelasController::class, 'submissionDownload'])->name('kelas.tugas.submissions.download');
         Route::post('/kelas/{teaching}/tugas/{assignment}/submissions/{submission}/nilai', [KelasController::class, 'submissionGradeUpdate'])->name('kelas.tugas.submissions.update_grade');
+        Route::get('/profil', [GuruProfileController::class, 'show'])->name('profil.show');
+Route::post('/profil', [GuruProfileController::class, 'update'])->name('profil.update');
         // Tambahkan rute guru lainnya di sini...
     });
 
-    // // GRUP RUTE UNTUK SISWA
-    // Route::prefix('siswa')->name('siswa.')->group(function () {
-    //     Route::get('/dashboard', [DashboardSiswaController::class, 'index'])->name('dashboard');
-    //     // Tambahkan rute siswa lainnya di sini...
+    // GRUP RUTE UNTUK SISWA
+    Route::prefix('siswa')->name('siswa.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\DashboardSiswaController::class, 'index'])->name('dashboard');
+        Route::get('/kelas', [\App\Http\Controllers\SiswaKelasController::class, 'index'])->name('kelas.index');
+        Route::get('/kelas/{teaching}', [\App\Http\Controllers\SiswaKelasController::class, 'show'])->name('kelas.show');
+        Route::get('/kelas/{teaching}/materi/{material}/unduh', [\App\Http\Controllers\SiswaKelasController::class, 'materiDownload'])->name('kelas.materi.download');
+        Route::get('/kelas/{teaching}/materi/{material}/view', [\App\Http\Controllers\SiswaKelasController::class, 'materiView'])->name('kelas.materi.view');
+
+        // Pengumpulan Tugas oleh Siswa
+        Route::get('/kelas/{teaching}/tugas/{assignment}/kumpulkan', [\App\Http\Controllers\SiswaTugasController::class, 'create'])->name('tugas.submit.create');
+        Route::post('/kelas/{teaching}/tugas/{assignment}/kumpulkan', [\App\Http\Controllers\SiswaTugasController::class, 'store'])->name('tugas.submit.store');
+
+        // Kuis oleh Siswa
+        Route::get('/kelas/{teaching}/kuis/{assignment}', [\App\Http\Controllers\SiswaKuisController::class, 'start'])->name('kuis.start');
+        Route::post('/kelas/{teaching}/kuis/{assignment}', [\App\Http\Controllers\SiswaKuisController::class, 'submit'])->name('kuis.submit');
+        Route::get('/kelas/{teaching}/kuis/{assignment}/hasil', [\App\Http\Controllers\SiswaKuisController::class, 'result'])->name('kuis.result');
+
+        // Profil Siswa
+        Route::get('/profil', [\App\Http\Controllers\SiswaProfileController::class, 'show'])->name('profil.show');
+        Route::post('/profil', [\App\Http\Controllers\SiswaProfileController::class, 'update'])->name('profil.update');
+        // Tambahkan rute siswa lainnya di sini...
+    });
 });

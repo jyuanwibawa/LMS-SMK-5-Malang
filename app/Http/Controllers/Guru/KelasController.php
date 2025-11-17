@@ -7,6 +7,8 @@ use App\Models\Teaching;
 use App\Models\Assignment;
 use App\Models\Material;
 use App\Models\Submission;
+use App\Models\Announcement;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,7 +33,12 @@ class KelasController extends Controller
         // Authorize: owner or admin
         abort_unless($this->canAccess($teaching), 403);
 
-        $teaching->load(['course', 'schoolClass.enrollments', 'materials', 'assignments.submissions']);
+        $teaching->load([
+            'course',
+            'schoolClass.enrollments.user',
+            'materials',
+            'assignments.submissions.user',
+        ]);
 
         $title = $teaching->course->name . ' - ' . $teaching->schoolClass->name;
         $subtitle = $teaching->schoolClass->enrollments->count() . ' siswa terdaftar';
@@ -74,41 +81,52 @@ class KelasController extends Controller
 
         $filePath = null;
         $fileType = null;
+        $mime = null;
+        $uploaded = null;
 
         if ($request->hasFile('file')) {
             $uploaded = $request->file('file');
-            // read file and store as gz-compressed hex in DB
-            $raw = $uploaded->get();
-            $gz = gzencode($raw, 9);
-            $hexData = bin2hex($gz);
-            $ext = strtolower($uploaded->getClientOriginalExtension());
             $mime = $uploaded->getMimeType();
-
+            $ext = strtolower($uploaded->getClientOriginalExtension() ?? '');
             if (empty($ext) && is_string($mime)) {
-                             $parts = explode('/', $mime);
+                $parts = explode('/', $mime);
                 $ext = end($parts) ?: '';
             }
-
+            // Simpan ke disk public dan catat path
+            $dir = 'materials/'.$teaching->id;
+            $filePath = $uploaded->store($dir, 'public');
             $videoExts = ['mp4','mov','avi','mkv','webm','m4v'];
             $isVideo = (is_string($mime) && str_starts_with($mime, 'video/')) || in_array($ext, $videoExts, true);
             $fileType = $isVideo ? 'VIDEO' : 'PDF';
-            // since we store in DB, do not use file_path for uploaded files
-            $filePath = null;
         } elseif (!empty($validated['link'])) {
             $filePath = $validated['link'];
             $fileType = 'LINK';
         }
 
-        Material::create([
+        $material = Material::create([
             'teaching_id' => $teaching->id,
             'title' => $validated['judul'],
             'description' => $validated['deskripsi'] ?? null,
             'file_path' => $filePath,
             'file_type' => $fileType,
-            'file_hex' => $hexData ?? null,
+            'file_hex' => null,
             'file_mime' => $mime ?? null,
-            'file_name' => isset($uploaded) ? $uploaded->getClientOriginalName() : null,
+            'file_name' => $uploaded?->getClientOriginalName(),
             'uploaded_at' => now(),
+        ]);
+
+        // Log aktivitas guru upload materi
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity_type' => 'guru_upload_materi',
+            'description' => sprintf(
+                "Guru %s mengunggah materi '%s' untuk %s - %s",
+                auth()->user()->name,
+                $material->title,
+                optional($teaching->course)->name,
+                optional($teaching->schoolClass)->name
+            ),
+            'timestamp' => now(),
         ]);
 
         return redirect()->route('guru.kelas.show', $teaching)->with('status', 'Materi berhasil diunggah');
@@ -137,28 +155,26 @@ class KelasController extends Controller
 
         $filePath = $material->file_path;
         $fileType = $material->file_type;
+        $mime = $material->file_mime;
+        $uploaded = null;
 
         if ($request->hasFile('file')) {
             $uploaded = $request->file('file');
-            // store as gz-compressed hex in DB; clear any path
-            $raw = $uploaded->get();
-            $gz = gzencode($raw, 9);
-            $hexData = bin2hex($gz);
-            $filePath = null;
-            $ext = strtolower($uploaded->getClientOriginalExtension());
             $mime = $uploaded->getMimeType();
+            $ext = strtolower($uploaded->getClientOriginalExtension() ?? '');
             if (empty($ext) && is_string($mime)) {
                 $parts = explode('/', $mime);
                 $ext = end($parts) ?: '';
             }
+            $dir = 'materials/'.$teaching->id;
+            $filePath = $uploaded->store($dir, 'public');
             $videoExts = ['mp4','mov','avi','mkv','webm','m4v'];
             $isVideo = (is_string($mime) && str_starts_with($mime, 'video/')) || in_array($ext, $videoExts, true);
             $fileType = $isVideo ? 'VIDEO' : 'PDF';
         } elseif (!empty($validated['link'])) {
             $filePath = $validated['link'];
             $fileType = 'LINK';
-            // clear any hex stored previously
-            $hexData = null; $mime = null;
+            $mime = null;
         }
 
         $material->update([
@@ -166,9 +182,9 @@ class KelasController extends Controller
             'description' => $validated['deskripsi'] ?? null,
             'file_path' => $filePath,
             'file_type' => $fileType,
-            'file_hex' => $hexData ?? $material->file_hex,
-            'file_mime' => $mime ?? $material->file_mime,
-            'file_name' => isset($uploaded) ? $uploaded->getClientOriginalName() : $material->file_name,
+            'file_hex' => null,
+            'file_mime' => $mime,
+            'file_name' => $uploaded?->getClientOriginalName() ?? $material->file_name,
         ]);
 
         return redirect()->route('guru.kelas.show', $teaching)->with('status', 'Materi berhasil diperbarui');
@@ -232,17 +248,119 @@ class KelasController extends Controller
             'end_time' => ['nullable','date','after_or_equal:start_time'],
         ]);
 
-        Assignment::create([
+        $assignment = Assignment::create([
             'teaching_id' => $teaching->id,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
-            'type' => 'tugas',
+            'type' => 'TUGAS',
             'start_time' => $validated['start_time'] ?? null,
             'end_time' => $validated['end_time'] ?? null,
         ]);
 
+        // Otomatis buat pengumuman untuk siswa
+        Announcement::create([
+            'user_id' => auth()->id(),
+            'class_id' => $teaching->class_id,
+            'title' => 'Tugas baru: ' . $assignment->title,
+            'content' => rtrim(($assignment->description ?? 'Tugas baru telah ditambahkan.') . (
+                $assignment->end_time ? ("\n\nDeadline: " . $assignment->end_time->format('d M Y H:i')) : ''
+            )),
+            'created_at' => now(),
+        ]);
+
+        // Log aktivitas guru membuat tugas
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity_type' => 'guru_buat_tugas',
+            'description' => sprintf(
+                "Guru %s membuat tugas '%s' untuk %s - %s",
+                auth()->user()->name,
+                $assignment->title,
+                optional($teaching->course)->name,
+                optional($teaching->schoolClass)->name
+            ),
+            'timestamp' => now(),
+        ]);
+
         return redirect()->route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas'])
             ->with('status', 'Tugas/Kuis berhasil dibuat');
+    }
+
+    public function kuisCreate(Teaching $teaching)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+        $teaching->load(['course', 'schoolClass']);
+        return view('guru.kelas.Tugas.tambah_kuis', compact('teaching'));
+    }
+
+    public function kuisStore(Teaching $teaching, Request $request)
+    {
+        abort_unless($this->canAccess($teaching), 403);
+
+        $validated = $request->validate([
+            'title' => ['required','string','max:255'],
+            'description' => ['nullable','string'],
+            'start_time' => ['nullable','date'],
+            'end_time' => ['nullable','date','after_or_equal:start_time'],
+            'questions' => ['required','array','min:1'],
+            'questions.*.question_text' => ['required','string'],
+            'questions.*.choices' => ['required','array','min:2'],
+            'questions.*.choices.*.choice_text' => ['required','string'],
+            'questions.*.correct_index' => ['required','integer','min:0'],
+        ]);
+
+        $assignment = Assignment::create([
+            'teaching_id' => $teaching->id,
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'type' => 'KUIS',
+            'start_time' => $validated['start_time'] ?? null,
+            'end_time' => $validated['end_time'] ?? null,
+        ]);
+
+        // Otomatis buat pengumuman untuk siswa
+        Announcement::create([
+            'user_id' => auth()->id(),
+            'class_id' => $teaching->class_id,
+            'title' => 'Kuis baru: ' . $assignment->title,
+            'content' => rtrim(($assignment->description ?? 'Kuis baru telah ditambahkan.') . (
+                $assignment->end_time ? ("\n\nDeadline: " . $assignment->end_time->format('d M Y H:i')) : ''
+            )),
+            'created_at' => now(),
+        ]);
+
+        // Log aktivitas guru membuat kuis
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'activity_type' => 'guru_buat_kuis',
+            'description' => sprintf(
+                "Guru %s membuat kuis '%s' untuk %s - %s",
+                auth()->user()->name,
+                $assignment->title,
+                optional($teaching->course)->name,
+                optional($teaching->schoolClass)->name
+            ),
+            'timestamp' => now(),
+        ]);
+
+        foreach ($validated['questions'] as $qIndex => $qData) {
+            $question = \App\Models\Question::create([
+                'assignment_id' => $assignment->id,
+                'question_text' => $qData['question_text'],
+                'question_type' => 'pilihan_ganda',
+            ]);
+
+            foreach ($qData['choices'] as $cIndex => $cData) {
+                \App\Models\Choice::create([
+                    'question_id' => $question->id,
+                    'choice_text' => $cData['choice_text'],
+                    'is_correct' => $cIndex === (int)($qData['correct_index'] ?? -1),
+                ]);
+            }
+        }
+
+        return redirect()->route('guru.kelas.show', ['teaching' => $teaching, 'tab' => 'tugas'])
+            ->with('status', 'Kuis berhasil dibuat');
     }
 
     public function tugasEdit(Teaching $teaching, Assignment $assignment)

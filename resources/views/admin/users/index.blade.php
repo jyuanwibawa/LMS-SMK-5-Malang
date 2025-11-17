@@ -187,8 +187,8 @@
             background-color: var(--primary-button-bg);
             color: var(--primary-button-text);
             border: none;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1.25rem;
+            border-radius: 999px;
+            padding: 0.75rem 1.4rem;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
@@ -200,15 +200,14 @@
 
         .user-management-card {
             background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0,0,0,.1);
-            overflow: hidden;
+            border-radius: 18px;
+            padding: 1.5rem 1.75rem;
+            border: 1px solid var(--border-color);
         }
 
         .card-header h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
         }
 
         .card-header p {
@@ -216,32 +215,65 @@
             color: #6b7280;
         }
 
-            .user-table-wrapper {
-                overflow-x: auto;
-            }
+        .user-table-wrapper { overflow-x:auto; margin-top: 1rem; border-radius: 16px; overflow:hidden; }
 
-            .toolbar { display:flex; justify-content: space-between; align-items:center; margin-bottom:1.5rem; gap:1rem; flex-wrap: wrap; }
-            .search-container { position: relative; flex-grow: 1; }
-            .search-container svg { position:absolute; left:1rem; top:50%; transform:translateY(-50%); width:20px; height:20px; color: var(--text-secondary); }
-            .search-input { width:100%; padding: .75rem 1rem .75rem 3rem; border:1px solid var(--border-color); border-radius:8px; font-size:.9rem; box-sizing: border-box; }
-            .search-input:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.2); }
-            .filter-btn { display:inline-flex; align-items:center; gap:.5rem; background-color: var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:.75rem 1rem; font-size:.9rem; font-weight:500; cursor:pointer; color: var(--text-primary); }
-            .filter-btn svg { width:20px; height:20px; color: var(--text-secondary); }
+        .toolbar {
+            display:flex;
+            justify-content: space-between;
+            align-items:center;
+            margin-top:1rem;
+            gap:1rem;
+            flex-wrap: wrap;
+        }
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+        }
+        .search-container svg {
+            position:absolute; left:1.1rem; top:50%; transform:translateY(-50%);
+            width:18px; height:18px; color: var(--text-secondary);
+        }
+        .search-input {
+            width:100%;
+            padding: .75rem 1rem .75rem 3rem;
+            border:1px solid var(--border-color);
+            border-radius:999px;
+            font-size:.9rem;
+            background:#F9FAFB;
+            box-sizing: border-box;
+        }
+        .search-input:focus {
+            outline:none;
+            border-color:#111827;
+            box-shadow:0 0 0 1px #11182733;
+        }
+        .filter-btn {
+            display:inline-flex;
+            align-items:center;
+            gap:.5rem;
+            background-color: #fff;
+            border:1px solid var(--border-color);
+            border-radius:999px;
+            padding:.7rem 1rem;
+            font-size:.9rem;
+            font-weight:500;
+            cursor:pointer;
+            color: var(--text-primary);
+        }
+        .filter-btn svg { width:18px; height:18px; color: var(--text-secondary); }
 
-            .user-table { width:100%; border-collapse: collapse; text-align:left; margin-top: 1.5rem; font-size: .9rem; }
-            
-            .user-table th, .user-table td { padding: 1rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; white-space: nowrap; }
+        .user-table { width:100%; border-collapse: collapse; text-align:left; font-size: .9rem; background:#fff; }
+        .user-table th, .user-table td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; white-space: nowrap; }
 
-            .user-table th {
-                font-size: 0.75rem;
-                font-weight: 600;
-                color: var(--text-secondary);
-                text-transform: uppercase;
-            }
+        .user-table th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
 
-            .user-table .user-name {
-                font-weight: 600;
-            }
+        .user-table .user-name {
+            font-weight: 600;
         }
 
         .badge {
@@ -316,27 +348,13 @@
                 <h1>Manajemen Pengguna</h1>
                 <p>Kelola data guru dan siswa di sistem LMS</p>
             </div>
-            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-                <form action="{{ route('admin.users.index') }}" method="GET" style="display:flex;gap:8px;align-items:center;">
-                    <div class="search-container">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
-                        <input class="search-input" type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari nama, email, NISN/NUPTK, role" />
-                    </div>
-                    <button type="submit" class="add-user-btn">Cari</button>
-                    @if(!empty($q))
-                        <a href="{{ route('admin.users.index') }}" class="add-user-btn" style="background:#e5e7eb;color:#111827;">Reset</a>
-                    @endif
-                </form>
-                <button id="show-add-modal-btn" class="add-user-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    Tambah Pengguna
-                </button>
-            </div>
+            <button id="show-add-modal-btn" class="add-user-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Tambah Pengguna
+            </button>
         </header>
 
         @if (session('success'))
@@ -366,9 +384,28 @@
 
         <div class="user-management-card">
             <div class="card-header">
-                <h2>Daftar Pengguna</h2>
-                <p>Total {{ $users->count() }} pengguna ditemukan</p>
+                <div>
+                    <h2>Daftar Pengguna</h2>
+                    <p>Total {{ $users->count() }} pengguna ditemukan</p>
+                </div>
             </div>
+
+            <form action="{{ route('admin.users.index') }}" method="GET">
+                <div class="toolbar">
+                    <div class="search-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <input class="search-input" type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari nama, email, NISN/NUPTK, role" />
+                    </div>
+                    <button type="submit" class="filter-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 6h16M7 12h10M10 18h4" />
+                        </svg>
+                        <span>Semua</span>
+                    </button>
+                </div>
+            </form>
 
             <div class="user-table-wrapper">
                 <table class="user-table">
